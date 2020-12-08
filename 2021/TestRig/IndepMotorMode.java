@@ -46,6 +46,9 @@ public class IndepMotorMode {
     private Telemetry.Item motor2DirectionTlm;
     private Telemetry.Item motor3DirectionTlm;
     private Telemetry.Item motor4DirectionTlm;
+    private Telemetry.Item motorPowerTlm;
+    private Telemetry.Item motorEncoderTlm;
+    private Telemetry.Item deviceNameTlm;
 
     private MotorDirection motor1Direction;
     private MotorDirection motor2Direction;
@@ -60,6 +63,7 @@ public class IndepMotorMode {
     //constructor to instantiate independent motor object
     public IndepMotorMode (Robot robot) {
         myRobot = robot;
+        myRobot.telemetry.clearAll();
         motorPosDelta = 5;
 
         motor1 = myRobot.hardwareMap.get(DcMotor.class, "motor1");
@@ -81,6 +85,9 @@ public class IndepMotorMode {
         motor2DirectionTlm = myRobot.telemetry.addData("motor2 Direction", motor2Direction);
         motor3DirectionTlm = myRobot.telemetry.addData("motor3 Direction", motor3Direction);
         motor4DirectionTlm = myRobot.telemetry.addData("motor4 Direction", motor4Direction);
+        motorPowerTlm = myRobot.telemetry.addData("motor Power", 0);
+        motorEncoderTlm = myRobot.telemetry.addData("encoder Increment", motorPosDelta);
+        deviceNameTlm = myRobot.telemetry.addData("device name: ", "");
 
     }
 
@@ -127,22 +134,34 @@ public class IndepMotorMode {
         int newMotorPosition;
         int currMotorPosition;
         DcMotor.Direction motorDirection;
+        String deviceName;
 
         //create list of motors
         List<DcMotor> motorList = Arrays.asList(motor1, motor2, motor3, motor4);
         //loop through all motors and set new motor position
 
-        for(DcMotor motor : motorList) {
+        for (DcMotor motor : motorList) {
+            deviceName = motor.toString(); //remove toString and put hardwareMap to get name
+            deviceNameTlm.setValue(deviceName);
             currMotorPosition = motor.getCurrentPosition();
             motorDirection = motor.getDirection();
             newMotorPosition = currMotorPosition;
-            if(motorDirection == DcMotor.Direction.FORWARD) {
+            if (motorDirection == DcMotor.Direction.FORWARD) {
                 newMotorPosition = currMotorPosition + motorPosDelta;
-            } else if(motorDirection == DcMotorSimple.Direction.REVERSE) {
+            } else if (motorDirection == DcMotorSimple.Direction.REVERSE) {
                 newMotorPosition = currMotorPosition - motorPosDelta;
             }
 
-            myRobot.addTask(new RunToEncoderValueTask(myRobot, motor, newMotorPosition, motorPower));
+            //only move motor when we are not stopped
+            if (deviceName == "motor1" && motor1Direction != MotorDirection.STOP) {
+                myRobot.addTask(new RunToEncoderValueTask(myRobot, motor, newMotorPosition, motorPower));
+            } else if (deviceName == "motor2" && motor2Direction != MotorDirection.STOP) {
+                myRobot.addTask(new RunToEncoderValueTask(myRobot, motor, newMotorPosition, motorPower));
+            } else if (deviceName == "motor3" && motor3Direction != MotorDirection.STOP) {
+                myRobot.addTask(new RunToEncoderValueTask(myRobot, motor, newMotorPosition, motorPower));
+            } else if (deviceName == "motor4" && motor4Direction != MotorDirection.STOP) {
+                myRobot.addTask(new RunToEncoderValueTask(myRobot, motor, newMotorPosition, motorPower));
+            }
         }
     }
 
@@ -182,19 +201,23 @@ public class IndepMotorMode {
                 break;
             case DPAD_UP_DOWN:
                 motorPower = 1.0;
+                motorPowerTlm.setValue(motorPower);
                 break;
             case DPAD_DOWN_DOWN:
                 motorPower = 0.5;
+                motorPowerTlm.setValue(motorPower);
                 break;
             case DPAD_LEFT_DOWN:
                 //controlling distance we move the motor
                 //value = encoder ticks
                 motorPosDelta = 64;
+                motorEncoderTlm.setValue(motorPosDelta);
                 break;
             case DPAD_RIGHT_DOWN:
                 //value = encoder ticks
                 //controlling distance we move the motor
                 motorPosDelta = 16;
+                motorEncoderTlm.setValue(motorPosDelta);
                 break;
         }
     }
