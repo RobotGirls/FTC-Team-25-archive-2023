@@ -22,9 +22,10 @@ public class TestRigDemo extends Robot {
     private GamepadTask gamepad1Task;
     private SelectModes modes;
     private IndepMotorMode indepMode;
+    private ServoMode servoMode;
     private SelectModes.TestRigMode selectedTestRigMode;
     // initializing gamepadControlChoice (of type GamepadControlChoice) to GamepadControlChoice.SELECT_TESTRIG_MODE;
-    private GamepadControlChoice gamepadControlChoice = GamepadControlChoice.INDEP_MOTOR_CONTROL;
+    private GamepadControlChoice gamepadControlChoice = GamepadControlChoice.SERVO_CONTROL;
     private SelectModes.TestRigMode selectedMode;
 
     // this init method is called when the init button is pressed on the driver station
@@ -33,6 +34,7 @@ public class TestRigDemo extends Robot {
         // here we instantiate the SelectModes - set aside memory for that class
         modes = new SelectModes(this);
         indepMode = new IndepMotorMode(this);
+        servoMode = new ServoMode(this);
 
         // here we instantiate the GamepadTask - set aside memory for that class
         gamepad1Task = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
@@ -80,6 +82,7 @@ public class TestRigDemo extends Robot {
                     indepMode.setUpGamepadForMotorControl(event);
                     break;
                 case SERVO_CONTROL:
+                    servoMode.setUpGamepad1ForServoControl(event);
                     break;
                 case DRIVE_CONTROL:
                     break;
