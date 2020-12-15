@@ -91,7 +91,6 @@ public class TestRigDemo extends Robot {
                 default:
                     // print to driver station
             }
-            setTestRigMode(modes.mode);
         }
     }
 
