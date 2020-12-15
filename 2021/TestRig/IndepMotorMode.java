@@ -62,7 +62,7 @@ public class IndepMotorMode {
     //constructor to instantiate independent motor object
     public IndepMotorMode (Robot robot) {
         myRobot = robot;
-        myRobot.telemetry.clearAll();
+        //myRobot.telemetry.clearAll();
         motorPosDelta = 0;
         motorPower = 0.5;
 

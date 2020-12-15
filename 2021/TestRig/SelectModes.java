@@ -24,7 +24,7 @@ public class SelectModes {
     }
 
     private Robot myRobot;
-    private TestRigMode mode;
+    public TestRigMode mode;
     private Telemetry.Item msgTelem;
     private Telemetry.Item modeTelem;
     private GamepadTask myGamepad1Task;
