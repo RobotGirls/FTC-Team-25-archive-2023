@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,8 @@ class ServoMode {
     //taking in list of servos and populating a list of Telemetry.Items, populating ServoTlmMap.
     //modifier is private
     private Map<Servo, Telemetry.Item> populateServoTlmMap(List<Servo> servoList) {
-        Map<Servo, Telemetry.Item> tmpServoTlmMap = null;
+        Map<Servo, Telemetry.Item> tmpServoTlmMap;
+        tmpServoTlmMap = new LinkedHashMap<>();
         //each loop of for loop wll give next servo on servo list
         for (Servo servo: servoList){
             String servoName = getServoName(servo);
@@ -165,20 +167,19 @@ class ServoMode {
     //modifier is public, can be called within this class, package, and other packages
     public ServoMode (Robot robot) {
         myRobot =  robot;
-        myRobot.telemetry.clearAll();
+        //myRobot.telemetry.clearAll();
         //get all servos in phone configuration
         servoList = myRobot.hardwareMap.getAll(Servo.class);
 
-        servoList.add(servo1);
         //get number of servos
         numServos = servoList.size();
         //set initiation servo directions
         servo1Direction = ServoDirection.STOP;
-       // servo2Direction = ServoDirection.STOP;
+        servo2Direction = ServoDirection.STOP;
 //        servo3Direction = ServoDirection.STOP;
 //        servo4Direction = ServoDirection.STOP;
         servo1DirectionTlm = myRobot.telemetry.addData("servo1 Direction:", ServoDirection.STOP);
-        //servo2DirectionTlm = myRobot.telemetry.addData("servo2 Direction:", ServoDirection.STOP);
+        servo2DirectionTlm = myRobot.telemetry.addData("servo2 Direction:", ServoDirection.STOP);
 //        servo3DirectionTlm = myRobot.telemetry.addData("servo3 Direction:", ServoDirection.STOP);
 //        servo4DirectionTlm = myRobot.telemetry.addData("servo4 Direction:", ServoDirection.STOP);
         if (numServos == 0) {
@@ -189,7 +190,7 @@ class ServoMode {
         servoTlmMap = populateServoTlmMap(servoList);
 
         //get the first servo in the map
-        activeServo = getFirstServoInMap(servoTlmMap);
+        //activeServo = getFirstServoInMap(servoTlmMap);
     }
 
 
@@ -213,13 +214,13 @@ class ServoMode {
                 servo1DirectionTlm.setValue(servo1Direction);
                 setDirection(servo1Direction, currServo, servo1DirectionTlm);
                 break;
-//            case DPAD_RIGHT_DOWN:
-//                // select servo 2
-//                currServo = getNthServoInMap(servoTlmMap,2);
-//                servo2Direction = servo2Direction.nextDirection();
-//                servo2DirectionTlm.setValue(servo2Direction);
-//                setDirection(servo2Direction, currServo, servo2DirectionTlm);
-//                break;
+            case DPAD_RIGHT_DOWN:
+                // select servo 2
+                currServo = getNthServoInMap(servoTlmMap,2);
+                servo2Direction = servo2Direction.nextDirection();
+                servo2DirectionTlm.setValue(servo2Direction);
+                setDirection(servo2Direction, currServo, servo2DirectionTlm);
+                break;
 //            case DPAD_DOWN_DOWN:
 //                // select servo 3
 //                currServo = getNthServoInMap(servoTlmMap,3);
