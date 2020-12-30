@@ -117,19 +117,19 @@ class ServoMode {
         newServoPosition = currServoPosition;
 
         if (servoDirection == Servo.Direction.FORWARD) {
-            newServoPosition = currServoPosition + ((double)servoPosDelta) / 255.0;
+            newServoPosition = ((double)servoPosDelta) / 255.0;
             if (newServoPosition > Servo.MAX_POSITION) {
                 newServoPosition = Servo.MAX_POSITION;
             }
         } else if (servoDirection == Servo.Direction.REVERSE) {
-            newServoPosition = currServoPosition - ((double)servoPosDelta) / 255.0;
+            newServoPosition = ((double)servoPosDelta) / 255.0;
             if (newServoPosition < Servo.MIN_POSITION) {
                 newServoPosition = Servo.MIN_POSITION;
             }
         }
         //command servo to new position and print telemetry to phone
         servo.setPosition(newServoPosition);
-        servoPosTlm.setValue(newServoPosition);
+        servoPosTlm.setValue((double)servoPosDelta);
         return;
 
     }
@@ -140,15 +140,16 @@ class ServoMode {
         //loop through all servos and set new positions
         for(Servo servo : servoList) {
             currentServoTlm = servoTlmMap.get(servo);
+            setNewServoPosition(servo, currentServoTlm);
             //if servoPosAbsolute is > 0 then go to absolute position
             //else we go to commanded position
-            if (servoPosAbsolute >= 0 ) {
-                currentServoTlm.setValue(SERVO_ABS_POS_INIT_POSITION);
-                servo.setPosition(SERVO_ABS_POS_INIT_POSITION);
-                servoPosAbsolute = SERVO_ABS_POS_NOT_SET;
-            }else {
-                setNewServoPosition(servo, currentServoTlm);
-            }
+//            if (servoPosAbsolute >= 0 ) {
+//                currentServoTlm.setValue(SERVO_ABS_POS_INIT_POSITION);
+//                servo.setPosition(SERVO_ABS_POS_INIT_POSITION);
+//                servoPosAbsolute = SERVO_ABS_POS_NOT_SET;
+//            }else {
+//                setNewServoPosition(servo, currentServoTlm);
+//            }
         }
         return;
     }
@@ -176,12 +177,12 @@ class ServoMode {
         //set initiation servo directions
         servo1Direction = ServoDirection.STOP;
         servo2Direction = ServoDirection.STOP;
-//        servo3Direction = ServoDirection.STOP;
-//        servo4Direction = ServoDirection.STOP;
+        servo3Direction = ServoDirection.STOP;
+        servo4Direction = ServoDirection.STOP;
         servo1DirectionTlm = myRobot.telemetry.addData("servo1 Direction:", ServoDirection.STOP);
         servo2DirectionTlm = myRobot.telemetry.addData("servo2 Direction:", ServoDirection.STOP);
-//        servo3DirectionTlm = myRobot.telemetry.addData("servo3 Direction:", ServoDirection.STOP);
-//        servo4DirectionTlm = myRobot.telemetry.addData("servo4 Direction:", ServoDirection.STOP);
+        servo3DirectionTlm = myRobot.telemetry.addData("servo3 Direction:", ServoDirection.STOP);
+        servo4DirectionTlm = myRobot.telemetry.addData("servo4 Direction:", ServoDirection.STOP);
         if (numServos == 0) {
             //printing out to driver station phone there are no servos
            Telemetry.Item none = myRobot.telemetry.addData("No Servos", " ");
@@ -221,28 +222,28 @@ class ServoMode {
                 servo2DirectionTlm.setValue(servo2Direction);
                 setDirection(servo2Direction, currServo, servo2DirectionTlm);
                 break;
-//            case DPAD_DOWN_DOWN:
-//                // select servo 3
-//                currServo = getNthServoInMap(servoTlmMap,3);
-//                servo3Direction = servo3Direction.nextDirection();
-//                servo3DirectionTlm.setValue(servo3Direction);
-//                setDirection(servo3Direction, currServo, servo3DirectionTlm);
-//                break;
-//            case DPAD_LEFT_DOWN:
-//                // select servo 4
-//                currServo = getNthServoInMap(servoTlmMap,4);
-//                servo4Direction = servo4Direction.nextDirection();
-//                servo4DirectionTlm.setValue(servo4Direction);
-//                setDirection(servo4Direction, currServo, servo4DirectionTlm);
-//                break;
+            case DPAD_DOWN_DOWN:
+                // select servo 3
+                currServo = getNthServoInMap(servoTlmMap,3);
+                servo3Direction = servo3Direction.nextDirection();
+                servo3DirectionTlm.setValue(servo3Direction);
+                setDirection(servo3Direction, currServo, servo3DirectionTlm);
+                break;
+            case DPAD_LEFT_DOWN:
+                // select servo 4
+                currServo = getNthServoInMap(servoTlmMap,4);
+                servo4Direction = servo4Direction.nextDirection();
+                servo4DirectionTlm.setValue(servo4Direction);
+                setDirection(servo4Direction, currServo, servo4DirectionTlm);
+                break;
             case BUTTON_Y_DOWN:
                 servoPosAbsolute = SERVO_ABS_POS_INIT_POSITION;
             case BUTTON_B_DOWN:
                 servoPosDelta = 1;
             case BUTTON_A_DOWN:
-                servoPosDelta = 10;
+                servoPosDelta = 125;
             case BUTTON_X_DOWN:
-                servoPosDelta = 45;
+                servoPosDelta = 255;
             default:
                 // msgTelem.setValue("Use right trigger to select mode, use button X to exit mode selection");
         }
