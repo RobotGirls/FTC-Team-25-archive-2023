@@ -39,11 +39,9 @@ class ServoMode {
     static final double SERVO_ABS_POS_INIT_POSITION = 0;
     static final double SERVO_ABS_POS_NOT_SET = -1;
     List<Servo> servoList;
-    List<ServoDirection> servoDirectionList;
     Robot myRobot;
     int numServos;
     private Map<Servo, Telemetry.Item> servoTlmMap;
-    private Servo activeServo;
     private ServoDirection servo1Direction;
     private ServoDirection servo2Direction;
     private ServoDirection servo3Direction;
@@ -52,9 +50,8 @@ class ServoMode {
     private Telemetry.Item servo2DirectionTlm;
     private Telemetry.Item servo3DirectionTlm;
     private Telemetry.Item servo4DirectionTlm;
-    private ServoDirection currentDirection;
-    List<Integer> servoPositions;
-    private Servo servo1;
+    private Telemetry.Item servoPosDeltaTlm;
+
     private int servoPosDelta;
     private double servoPosAbsolute = SERVO_ABS_POS_NOT_SET;
 
@@ -105,7 +102,7 @@ class ServoMode {
         return(nthServo);
     }
 
-    private void setNewServoPosition(Servo servo, Telemetry.Item servoPosTlm) {
+    private void setNewServoPosition(Servo servo, Telemetry.Item servoPosTlm, int n) {
         double currServoPosition;
         double newServoPosition;
         Servo.Direction servoDirection;
@@ -127,29 +124,42 @@ class ServoMode {
                 newServoPosition = Servo.MIN_POSITION;
             }
         }
-        //command servo to new position and print telemetry to phone
-        servo.setPosition(newServoPosition);
-        servoPosTlm.setValue((double)servoPosDelta);
-        return;
+        if (n == 1 && servo1Direction != ServoDirection.STOP) {
+            //command servo to new position and print telemetry to phone
+            servo.setPosition(newServoPosition);
+            servoPosTlm.setValue(newServoPosition * 255.0);
+        } else if (n == 2 && servo2Direction != ServoDirection.STOP) {
+            servo.setPosition(newServoPosition);
+            servoPosTlm.setValue(newServoPosition * 255.0);
+        } else if (n == 3 && servo3Direction != ServoDirection.STOP) {
+            servo.setPosition(newServoPosition);
+            servoPosTlm.setValue(newServoPosition * 255.0);
+        } else if (n == 4 && servo4Direction != ServoDirection.STOP) {
+            servo.setPosition(newServoPosition);
+            servoPosTlm.setValue(newServoPosition * 255.0);
+        }
+            return;
 
     }
 
     private void driveServos(){
         Telemetry.Item currentServoTlm;
+        int count = 0;
         double newServoPosition;
         //loop through all servos and set new positions
         for(Servo servo : servoList) {
+            count += 1;
             currentServoTlm = servoTlmMap.get(servo);
-            setNewServoPosition(servo, currentServoTlm);
+            setNewServoPosition(servo, currentServoTlm, count);
             //if servoPosAbsolute is > 0 then go to absolute position
             //else we go to commanded position
-//            if (servoPosAbsolute >= 0 ) {
-//                currentServoTlm.setValue(SERVO_ABS_POS_INIT_POSITION);
-//                servo.setPosition(SERVO_ABS_POS_INIT_POSITION);
-//                servoPosAbsolute = SERVO_ABS_POS_NOT_SET;
-//            }else {
-//                setNewServoPosition(servo, currentServoTlm);
-//            }
+           if (servoPosAbsolute >= 0 ) {
+                currentServoTlm.setValue(SERVO_ABS_POS_INIT_POSITION);
+                servo.setPosition(SERVO_ABS_POS_INIT_POSITION);
+                servoPosAbsolute = SERVO_ABS_POS_NOT_SET;
+            }else {
+                setNewServoPosition(servo, currentServoTlm, count);
+            }
         }
         return;
     }
@@ -183,6 +193,7 @@ class ServoMode {
         servo2DirectionTlm = myRobot.telemetry.addData("servo2 Direction:", ServoDirection.STOP);
         servo3DirectionTlm = myRobot.telemetry.addData("servo3 Direction:", ServoDirection.STOP);
         servo4DirectionTlm = myRobot.telemetry.addData("servo4 Direction:", ServoDirection.STOP);
+        servoPosDeltaTlm = myRobot.telemetry.addData("servo Position: ", 0);
         if (numServos == 0) {
             //printing out to driver station phone there are no servos
            Telemetry.Item none = myRobot.telemetry.addData("No Servos", " ");
@@ -237,13 +248,21 @@ class ServoMode {
                 setDirection(servo4Direction, currServo, servo4DirectionTlm);
                 break;
             case BUTTON_Y_DOWN:
-                servoPosAbsolute = SERVO_ABS_POS_INIT_POSITION;
+                servoPosDelta -= 1;
+                servoPosDeltaTlm.setValue(servoPosDelta);
+                break;
             case BUTTON_B_DOWN:
-                servoPosDelta = 1;
+                servoPosDelta -= 50;
+                servoPosDeltaTlm.setValue(servoPosDelta);
+                break;
             case BUTTON_A_DOWN:
-                servoPosDelta = 125;
+                servoPosDelta += 1;
+                servoPosDeltaTlm.setValue(servoPosDelta);
+                break;
             case BUTTON_X_DOWN:
-                servoPosDelta = 255;
+                servoPosDelta += 50;
+                servoPosDeltaTlm.setValue(servoPosDelta);
+                break;
             default:
                 // msgTelem.setValue("Use right trigger to select mode, use button X to exit mode selection");
         }
