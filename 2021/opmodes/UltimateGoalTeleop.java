@@ -40,6 +40,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.nio.channels.FileLock;
+
 import team25core.GamepadTask;
 import team25core.RobotEvent;
 import team25core.SingleGamepadControlScheme;
@@ -60,11 +62,16 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
 
     private DcMotor wobbleLift;
     private Servo wobbleGrab;
+    private Servo shootingServo;
     private boolean wobbleGrabIsOpen = true;
+    private boolean shootingServoIsOpen = true;
 
     private static final int TICKS_PER_INCH = 79;
     private final double OPEN_WOBBLE_SERVO = (float) 244.0 / 256.0;
     private final double CLOSE_WOBBLE_SERVO = (float) 140.0 / 256.0;
+    private final double OPEN_SHOOTING_SERVO = (float) 244.0 / 256.0;
+    private final double CLOSE_SHOOTING_SERVO = (float) 244.0 / 256.0;
+
 
     //private FourWheelDirectDrivetrain drivetrain;
     //private MechanumGearedDrivetrain drivetrain;
@@ -86,6 +93,8 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
 
         //mapping wobble grab servo
         wobbleGrab = hardwareMap.servo.get("wobbleGrabServo");
+        shootingServo = hardwareMap.servo.get("shootingServo");
+
 
         //mapping the launch mech and intake mech
         launchMech = hardwareMap.get(DcMotor.class, "launchMech");
@@ -137,11 +146,19 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
                 switch (gamepadEvent.kind) {
                     case BUTTON_X_DOWN:
                         // enable the launch mech
-                        launchMech.setPower(1);
+                        //launchMech.setPower(1);
+                        //uses shooter servo
+                        if (shootingServoIsOpen) {
+                            shootingServo.setPosition(CLOSE_SHOOTING_SERVO);
+                            shootingServoIsOpen = false;
+                        } else {
+                            wobbleGrab.setPosition(OPEN_SHOOTING_SERVO);
+                            shootingServoIsOpen = true;
+                        }
                         break;
                     case BUTTON_X_UP:
                         // stop the launch mech
-                        launchMech.setPower(0);
+                        //launchMech.setPower(0);
                         break;
                     case BUTTON_Y_DOWN:
                         //enable the intake mech
