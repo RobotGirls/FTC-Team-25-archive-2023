@@ -52,7 +52,7 @@ public class UltimateGoalAuto extends Robot {
     private Telemetry.Item handleEventTlm;
     private int numTimesInHandleEvent = 0;
     private double ringConfidence;
-   // private String ringType = "unknown";
+    // private String ringType = "unknown";
     private String ringType;
 
     private DeadReckonPath launchLinePath;
@@ -136,6 +136,7 @@ public class UltimateGoalAuto extends Robot {
         });
     }
 
+    //need to test paths and change numbers
     public void goToTargetZoneA()
     {
         RobotLog.i("drives to target goal A with wobble goal");
@@ -184,6 +185,7 @@ public class UltimateGoalAuto extends Robot {
         });
     }
 
+    //need to fix 0 ring detection
     public void startRingTimer() {
         rtTask = new SingleShotTimerTask(this, RING_TIMER) {
             //the handleEvent method is called when timer expires
@@ -258,23 +260,23 @@ public class UltimateGoalAuto extends Robot {
 
                 if (event.kind == EventKind.OBJECTS_DETECTED) {
                     objectSeenTlm.setValue(ringType);
-                  //  rdTask.stop();
-                      if (ringType.equals("Single") ){
-                          objectSeenTlm.setValue("single ring");
-                          currentLocationTlm.setValue("in RingDetectionTask handleEvent single ring");
-                          goToTargetZone(targetZoneBPath, "zone B" );
-                      } else if (ringType.equals("Quad")){
-                          objectSeenTlm.setValue("quad rings");
-                          currentLocationTlm.setValue("in RingDetectionTask handleEvent quad ring");
-                          goToTargetZone(targetZoneCPath, "zone C" );
-                      } else {
-                          objectSeenTlm.setValue("no rings");
-                      }
-                      //stops ring detection task
-                      rdTask.stop();
-                      //stops timer
-                      rtTask.stop();
-               }
+                    //  rdTask.stop();
+                    if (ringType.equals("Single") ){
+                        objectSeenTlm.setValue("single ring");
+                        currentLocationTlm.setValue("in RingDetectionTask handleEvent single ring");
+                        //    goToTargetZone(targetZoneBPath, "zone B" );
+                    } else if (ringType.equals("Quad")){
+                        objectSeenTlm.setValue("quad rings");
+                        currentLocationTlm.setValue("in RingDetectionTask handleEvent quad ring");
+                        //    goToTargetZone(targetZoneCPath, "zone C" );
+                    } else {
+                        objectSeenTlm.setValue("no rings");
+                    }
+                    //stops ring detection task
+                    //  rdTask.stop();
+                    //stops timer
+                    //  rtTask.stop();
+                }
             }
         };
         currentLocationTlm.setValue("in setRingDetection");
@@ -306,7 +308,7 @@ public class UltimateGoalAuto extends Robot {
         currentLocationTlm = telemetry.addData("current location", "in init" );
         handleEventTlm = telemetry.addData("num times in handle event", "0");
         objectSeenTlm = telemetry.addData("saw", "unknown");
-        
+
         //initializing drivetrain
         drivetrain1 = new MechanumGearedDrivetrain(frontRight, backRight, frontLeft, backLeft);
         drivetrain1.resetEncoders();
@@ -323,7 +325,7 @@ public class UltimateGoalAuto extends Robot {
 
         //starting ring detection
         setRingDetection();
-        startRingTimer();
+        //  startRingTimer();
 
         //initializing autonomous path
         initPath();
@@ -339,8 +341,8 @@ public class UltimateGoalAuto extends Robot {
         addTask(rdTask);
 
         //starting ring timer task
-        addTask(rtTask);
+        //addTask(rtTask);
 
-        //parkOnLaunchLine();
+        // parkOnLaunchLine();
     }
 }
