@@ -36,6 +36,7 @@ package opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -45,6 +46,7 @@ import team25core.RobotEvent;
 import team25core.SingleGamepadControlScheme;
 import team25core.SingleShotTimerTask;
 import team25core.StandardFourMotorRobot;
+import team25core.TankMechanumControlSchemeReverse;
 import team25core.TeleopDriveTask;
 
 @TeleOp(name = "UltimateGoalTeleop")
@@ -63,8 +65,8 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
     private boolean wobbleGrabIsOpen = true;
 
     private DcMotor ringLift; //hd hex 40
-    private Servo ringDispenser; //regular servo
-    private boolean ringDispenserExtended = false;
+    private Servo ringDispenser; //continuous servo
+    private boolean ringDispenserOpen = false;
 
     private static final int TICKS_PER_INCH = 79;
     private final double OPEN_WOBBLE_SERVO = (float) 244.0 / 256.0;
@@ -112,6 +114,9 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
         wobbleLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         ringLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
        /* launch = new OneWheelDirectDrivetrain(launchMech);
         launch.resetEncoders();
         launch.encodersOn();
@@ -129,12 +134,14 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
     @Override
     public void start() {
 
-        SingleGamepadControlScheme scheme = new SingleGamepadControlScheme(gamepad1);
+        //SingleGamepadControlScheme scheme = new SingleGamepadControlScheme(gamepad1);
+        TankMechanumControlSchemeReverse scheme = new TankMechanumControlSchemeReverse(gamepad1);
 
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
 
         this.addTask(drivetask);
 
+        //gamepad 2 used for mechanism control
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             //@Override
             public void handleEvent(RobotEvent e) {
@@ -144,21 +151,20 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
                     //launching system
                     case BUTTON_X_DOWN:
                         //shooting Servo open or closed depending on boolean toggle
-                        if (ringDispenserExtended) {
-                            ringDispenser.setPosition(RETURN_RING_DISPENSER);
-                            ringDispenserExtended = false;
-                        } else {
+                        if (ringDispenserOpen) {
                             ringDispenser.setPosition(DISPENSE_RING);
-                            ringDispenserExtended = true;
+                            ringDispenserOpen = false;
+                        } else {
+                            ringDispenser.setPosition(RETURN_RING_DISPENSER);
+                            ringDispenserOpen = true;
                         }
                         break;
                     case BUTTON_Y_DOWN:
                         //activate launching mech
-                        launchMechLeft.setPower(0.5);
-                        launchMechRight.setPower(-0.15);
+                        launchMechLeft.setPower(0.50);
+                        launchMechRight.setPower(-0.20);
                         break;
                     case BUTTON_Y_UP:
-                        // stop the launching mech
                         launchMechLeft.setPower(0);
                         launchMechRight.setPower(0);
                         break;
