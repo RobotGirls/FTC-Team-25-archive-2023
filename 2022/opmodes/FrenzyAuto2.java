@@ -31,29 +31,29 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package examples;
+package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import team25core.DeadReckonPath;
-import team25core.Robot;
 import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.Robot;
 import team25core.RobotEvent;
-import team25core.TankDriveTask;
-import team25core.TwoWheelDirectDrivetrain;
 
-@Autonomous(name = "FrenzyAuto")
+@Autonomous(name = "FrenzyAutoSB1")
 //@Disabled
-public class FrenzyAuto extends Robot {
+public class FrenzyAuto2 extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
+    private DcMotor rearLeft;
+    private DcMotor rearRight;
+
+    //private Servo teamElementServo;
+    //private DcMotor carouselMech;
 
     private FourWheelDirectDrivetrain drivetrain;
 
@@ -74,12 +74,12 @@ public class FrenzyAuto extends Robot {
     @Override
     public void init()
     {
-        frontLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "backRight");
-        rearLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        rearRight = hardwareMap.get(DcMotor.class, "frontRight");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
+        rearRight = hardwareMap.get(DcMotor.class, "rearRight");
 
-        drivetrain = new FourWheelDirectDrivetrain(frontRight, backRight, frontLeft, backRight);
+        drivetrain = new FourWheelDirectDrivetrain(frontRight, rearRight, frontLeft, rearLeft);
     }
 
     @Override
@@ -87,8 +87,15 @@ public class FrenzyAuto extends Robot {
     {
         DeadReckonPath path = new DeadReckonPath();
 
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
+        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9, 1.0);
 
+        path.addPause(5000);
+
+        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
+
+        path.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 38, -1.0);
+
+        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
 
         /**
          * Alternatively, this could be an anonymous class declaration that implements
