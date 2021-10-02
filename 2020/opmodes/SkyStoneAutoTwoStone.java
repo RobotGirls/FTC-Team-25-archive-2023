@@ -185,7 +185,7 @@ public class SkyStoneAutoTwoStone extends Robot {
                     sidewaysPath = rightBlueSideways;
                     break;
                 case BUTTON_B_DOWN:
-                    allianceColor = AllianceColor.RED;
+                     = allianceColor.RED;
                     allianceTlm.setValue("RED");
                     foundationPath = redFoundationPath;
                     endFoundationPath = endRedFoundation;
