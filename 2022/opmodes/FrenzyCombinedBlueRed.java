@@ -126,6 +126,10 @@ public class FrenzyCombinedBlueRed extends Robot {
         rearRight = hardwareMap.get(DcMotor.class, "rearRight");
 
         drivetrain = new FourWheelDirectDrivetrain(frontRight, rearRight, frontLeft, rearLeft);
+
+        allianceColor = allianceColor.DEFAULT;
+        gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
+        addTask(gamepad);
     }
 
     @Override

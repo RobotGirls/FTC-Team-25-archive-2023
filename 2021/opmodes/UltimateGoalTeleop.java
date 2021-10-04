@@ -47,7 +47,7 @@ import team25core.SingleShotTimerTask;
 import team25core.StandardFourMotorRobot;
 import team25core.TeleopDriveTask;
 
-@TeleOp(name = "UltimateGoalTeleop")
+@TeleOp(name = "UltimateGoalTeleop1")
 //@Disabled
 public class UltimateGoalTeleop extends StandardFourMotorRobot {
 
