@@ -86,17 +86,7 @@ public class UltimateGoalAuto extends Robot {
 
 
         //starts when you have stone and want to move
-        this.addTask(new DeadReckonTask(this, launchLinePath, drivetrain1){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    RobotLog.i("finished parking");
-
-                }
-            }
-        });
+        DrivetrainBase
     }
 
     private void lowerWobbleGoal()
