@@ -34,18 +34,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import team25core.DeadReckonPath;
+import team25core.Robot;
 import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
-import team25core.Robot;
 import team25core.RobotEvent;
+import team25core.TankDriveTask;
+import team25core.TwoWheelDirectDrivetrain;
 
-@Autonomous(name = "FrenzyAutoSB1")
+@Autonomous(name = "FrenzyAutoW1")
 //@Disabled
-public class FrenzyAuto2 extends Robot {
+public class FrenzyAutoSTRAIGHT extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -87,15 +90,8 @@ public class FrenzyAuto2 extends Robot {
     {
         DeadReckonPath path = new DeadReckonPath();
 
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9, 1.0);
+        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 1.0);
 
-        path.addPause(5000);
-
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
-
-        path.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 38, -1.0);
-
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
 
         /**
          * Alternatively, this could be an anonymous class declaration that implements
