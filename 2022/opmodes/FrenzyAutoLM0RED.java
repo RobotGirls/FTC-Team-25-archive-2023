@@ -124,10 +124,10 @@ public class FrenzyAutoLM0RED extends Robot {
     {
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
-        rearRight = hardwareMap.get(DcMotor.class, "rearRight");
+        rearLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        rearRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        carouselMech = hardwareMap.get(DcMotor.class, "carouselMech");
+        carouselMech = hardwareMap.get(DcMotor.class, "carouselMechL");
 
         carouselDriveTrain = new OneWheelDirectDrivetrain(carouselMech);
         carouselDriveTrain.resetEncoders();

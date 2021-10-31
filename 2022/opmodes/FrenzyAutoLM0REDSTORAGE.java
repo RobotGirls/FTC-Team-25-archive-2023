@@ -59,10 +59,10 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
     private OneWheelDirectDrivetrain carouselDriveTrain;
     private DcMotor carouselMech;
 
-    private DeadReckonPath goToCarouselPath;
     private DeadReckonPath turningCarouselPath;
+    private DeadReckonPath goToCarouselPath;
     private DeadReckonPath goBackOriginalLocationPath;
-    private DeadReckonPath goStrafeRightPath;
+    private DeadReckonPath goStrafeLeftPath;
     private DeadReckonPath goParkInStoragePath;
 
 
@@ -90,8 +90,8 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
     {
         // 1
         goToCarouselPath = new DeadReckonPath();
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6, 1.0);
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.TURN, 37, 1.0);
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 1.0);
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
 
         // 2
         turningCarouselPath = new DeadReckonPath();
@@ -100,17 +100,20 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
 
         //3
         goBackOriginalLocationPath = new DeadReckonPath();
-        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.TURN, 20, -1.0);
-        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6, -1.0);
+        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
 
-        goStrafeRightPath = new DeadReckonPath();
-        goStrafeRightPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 1.0);
+        goStrafeLeftPath = new DeadReckonPath();
+        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 17, 1.0);
 
         goParkInStoragePath = new DeadReckonPath();
         goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
 
 
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
 
+        //path.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 38, -1.0);
+
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 75, -1.0);
 
 
     }
@@ -120,10 +123,10 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
     {
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
-        rearRight = hardwareMap.get(DcMotor.class, "rearRight");
+        rearLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        rearRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        carouselMech = hardwareMap.get(DcMotor.class, "carouselMech");
+        carouselMech = hardwareMap.get(DcMotor.class, "carouselMechL");
 
         carouselDriveTrain = new OneWheelDirectDrivetrain(carouselMech);
         carouselDriveTrain.resetEncoders();
@@ -147,8 +150,8 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                   pathTlm.setValue("arrived at carousel");
-                   spinCarousel();
+                    pathTlm.setValue("arrived at carousel");
+                    spinCarousel();
 
                 }
             }
@@ -180,7 +183,7 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     pathTlm.setValue("went back to original positions");
-                    goStrafeRight();
+                    goStrafeLeft();
 
 
                 }
@@ -189,9 +192,9 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
 
     }
 
-    public void goStrafeRight()
+    public void goStrafeLeft()
     {
-        this.addTask(new DeadReckonTask(this, goStrafeRightPath, drivetrain){
+        this.addTask(new DeadReckonTask(this, goStrafeLeftPath, drivetrain){
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
@@ -215,7 +218,7 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                    pathTlm.setValue("parked in Warehouse");
+                    pathTlm.setValue("parked in Storage");
 
 
                 }
