@@ -18,6 +18,9 @@ import team25core.RunToEncoderValueTask;
 import team25core.SingleGamepadControlScheme;
 import team25core.SingleShotTimerTask;
 import team25core.StandardFourMotorRobot;
+import team25core.TankMechanumControlScheme;
+import team25core.TankMechanumControlSchemeBackwards;
+import team25core.TankMechanumControlSchemeReverse;
 import team25core.TeleopDriveTask;
 
 @TeleOp(name = "FreightFrenzyTeleop")
@@ -45,9 +48,11 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     private DcMotor carouselMechTwo;
 
     //freight intake
-    //private DcMotor freightIntake;
+    private DcMotor freightIntake;
     private Servo intakeDrop;
     private boolean intakeDropOpen = false;
+
+    //private TeleopDriveTask driveTask;
 
     //    private final double OPEN_DROP_SERVO = (float) ;
 //    private final double CLOSE_DROP_SERVO = (float) ;
@@ -60,9 +65,9 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     //changing direction for flip mechanism
     private DcMotor flipOver;
     private OneWheelDirectDrivetrain flipOverDrivetrain;
-    public static int DEGREES_DOWN = 90;
+    public static int DEGREES_DOWN = 700;
     public static int DEGREES_UP = 180;
-    public static double FLIPOVER_POWER = 0.1;
+    public static double FLIPOVER_POWER = 0.3;
     private boolean rotateDown = true;
 
     //private FourWheelDirectDrivetrain drivetrain;
@@ -109,11 +114,11 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
 //        backRight = hardwareMap.get(DcMotorEx.class, "rearRight");
 
         //mapping carousel mech
-        carouselMechOne = hardwareMap.get(DcMotor.class, "carouselMech");
-        carouselMechTwo = hardwareMap.get(DcMotor.class, "carouselMech");
+        carouselMechOne = hardwareMap.get(DcMotor.class, "carouselMechR");
+        carouselMechTwo = hardwareMap.get(DcMotor.class, "carouselMechL");
 
         //mapping freight intake mech
-        //freightIntake = hardwareMap.get(DcMotor.class, "freightIntake");
+        freightIntake = hardwareMap.get(DcMotor.class, "freightIntake");
         flipOver = hardwareMap.get(DcMotor.class, "flipOver");
 //        intakeDrop = hardwareMap.servo.get("intakeDrop");
 
@@ -124,7 +129,7 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         carouselMechOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         carouselMechTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //freightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        freightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flipOver.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flipOver.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -150,6 +155,7 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     @Override
     public void start() {
 
+        //TankMechanumControlSchemeReverse scheme = new TankMechanumControlSchemeReverse(gamepad1);
         SingleGamepadControlScheme scheme = new SingleGamepadControlScheme(gamepad1);
 
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
@@ -165,37 +171,54 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
                     //launching system
                     case RIGHT_TRIGGER_DOWN:
                         //moving carousel
-                        carouselMechOne.setPower(1);
+                        carouselMechOne.setPower(-1);
+                        carouselMechTwo.setPower(1);
                         break;
                     case RIGHT_TRIGGER_UP:
                         //STOPPING CAROUSEL
                         carouselMechOne.setPower(0);
+                        carouselMechTwo.setPower(0);
                         break;
                     case LEFT_TRIGGER_DOWN:
                         //moving carousel
+                        carouselMechOne.setPower(1);
                         carouselMechTwo.setPower(-1);
                         break;
                     case LEFT_TRIGGER_UP:
                         //STOPPING CAROUSEL
                         carouselMechTwo.setPower(0);
+                        carouselMechOne.setPower(0);
                         break;
-//                    case RIGHT_BUMPER_DOWN:
-//                        //moving flaps forward
-//                        freightIntake.setPower(INTAKE_IN);
-//                        break;
-//                    case RIGHT_BUMPER_UP:
-//                        freightIntake.setPower(0);
-//                        break;
-//                    case LEFT_BUMPER_DOWN:
-//                        //moving flaps backward
-//                        freightIntake.setPower(INTAKE_OUT);
-//                        break;
-//                    case LEFT_BUMPER_UP:
-//                        freightIntake.setPower(0);
-//                        break;
+                    case RIGHT_BUMPER_DOWN:
+                        //moving flaps forward
+                        freightIntake.setPower(1);
+                        break;
+                    case RIGHT_BUMPER_UP:
+                        freightIntake.setPower(0);
+                        break;
+                    case LEFT_BUMPER_DOWN:
+                        //moving flaps backward
+                        freightIntake.setPower(-1);
+                        break;
+                    case LEFT_BUMPER_UP:
+                        freightIntake.setPower(0);
+                        break;
                     case BUTTON_Y_DOWN:
                         alternateRotate();
                         break;
+//                    case BUTTON_Y_DOWN:
+//                        flipOver.setPower(1);
+//                        break;
+//                    case BUTTON_Y_UP:
+//                        flipOver.setPower(0);
+//                        break;
+//                    case BUTTON_A_DOWN:_DOWN:
+//                        flipOver.setPower(-1);
+//                        break;
+//                    case BUTTON_A_UP:_UP:
+//                        flipOver.setPower(0);
+//                        break;
+
 //                    case BUTTON_A_DOWN:
 //                        //servo holding the freight inside intake
 //                        if (intakeDropOpen) {
