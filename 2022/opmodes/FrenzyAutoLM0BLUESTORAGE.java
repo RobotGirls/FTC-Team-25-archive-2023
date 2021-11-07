@@ -90,7 +90,11 @@ public class FrenzyAutoLM0BLUESTORAGE extends Robot {
     {
         // 1
         goToCarouselPath = new DeadReckonPath();
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7.5, -1.0);
+
+//        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, 1.0);
+//        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.TURN, 25.5, -1.0);
+       goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
 
         // 2
         turningCarouselPath = new DeadReckonPath();
@@ -102,10 +106,10 @@ public class FrenzyAutoLM0BLUESTORAGE extends Robot {
         goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
 
         goStrafeLeftPath = new DeadReckonPath();
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 17, -1.0);
+        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 22, -1.0);
 
         goParkInStoragePath = new DeadReckonPath();
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
+        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15.5, 1.0);
 
 
         //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);

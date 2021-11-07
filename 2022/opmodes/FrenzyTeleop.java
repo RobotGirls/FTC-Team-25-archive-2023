@@ -9,8 +9,11 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.lang.invoke.MethodHandle;
+
 import team25core.DeadmanMotorTask;
 import team25core.GamepadTask;
+import team25core.MechanumGearedDrivetrain;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
@@ -19,8 +22,8 @@ import team25core.SingleGamepadControlScheme;
 import team25core.SingleShotTimerTask;
 import team25core.StandardFourMotorRobot;
 import team25core.TankMechanumControlScheme;
-import team25core.TankMechanumControlSchemeBackwards;
-import team25core.TankMechanumControlSchemeReverse;
+//import team25core.TankMechanumControlSchemeBackwards;
+//import team25core.TankMechanumControlSchemeReverse;
 import team25core.TeleopDriveTask;
 
 @TeleOp(name = "FreightFrenzyTeleop")
@@ -36,13 +39,6 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     }
 
 
-
-//    private DcMotor frontLeft;
-//    private DcMotor frontRight;
-//    private DcMotor backLeft;
-//    private DcMotor backRight;
-
-
     //duck carousel
     private DcMotor carouselMechOne;
     private DcMotor carouselMechTwo;
@@ -52,34 +48,26 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     private Servo intakeDrop;
     private boolean intakeDropOpen = false;
 
-    //private TeleopDriveTask driveTask;
 
-    //    private final double OPEN_DROP_SERVO = (float) ;
-//    private final double CLOSE_DROP_SERVO = (float) ;
-//    private final double INTAKE_OUT = 1;
-//    private final double INTAKE_IN = -1;
-//    private final double INTAKE_STOP = 0;
-//    private final double FLIP_FORWARD_DIRECTION = 0.1;
-//    private final double FLIP_BACKWARD_DRECTION = -0.1;
 
     //changing direction for flip mechanism
     private DcMotor flipOver;
     private OneWheelDirectDrivetrain flipOverDrivetrain;
-    public static int DEGREES_DOWN = 700;
+    public static int DEGREES_DOWN = 1600;
     public static int DEGREES_UP = 180;
     public static double FLIPOVER_POWER = 0.3;
     private boolean rotateDown = true;
+    TankMechanumControlScheme scheme;
 
-    //private FourWheelDirectDrivetrain drivetrain;
-    //private MechanumGearedDrivetrain drivetrain;
+
+    private MechanumGearedDrivetrain drivetrain;
 
     @Override
     public void handleEvent(RobotEvent e) {
     }
 
     //flipover positions for bottom and top positions for intake and placing on hubs
-    private void rotateFlipOver(Direction direction)
-    {
+    private void rotateFlipOver(Direction direction) {
         if (direction == FrenzyTeleop.Direction.CLOCKWISE) {
             flipOver.setDirection(DcMotorSimple.Direction.REVERSE);
         } else {
@@ -89,8 +77,7 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     }
 
     //alternates between down and up positions.
-    private void alternateRotate()
-    {
+    private void alternateRotate() {
         if (rotateDown) {       // happens first
             rotateFlipOver(FrenzyTeleop.Direction.CLOCKWISE);
             rotateDown = false;
@@ -107,12 +94,6 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
 
         super.init();
 
-        //mapping the wheels
-//        frontLeft = hardwareMap.get(DcMotorEx.class, "frontLeft");
-//        frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
-//        backLeft = hardwareMap.get(DcMotorEx.class, "rearLeft");
-//        backRight = hardwareMap.get(DcMotorEx.class, "rearRight");
-
         //mapping carousel mech
         carouselMechOne = hardwareMap.get(DcMotor.class, "carouselMechR");
         carouselMechTwo = hardwareMap.get(DcMotor.class, "carouselMechL");
@@ -120,13 +101,9 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
         //mapping freight intake mech
         freightIntake = hardwareMap.get(DcMotor.class, "freightIntake");
         flipOver = hardwareMap.get(DcMotor.class, "flipOver");
-//        intakeDrop = hardwareMap.servo.get("intakeDrop");
+//      intakeDrop = hardwareMap.servo.get("intakeDrop");
 
         // reset encoders
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         carouselMechOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         carouselMechTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         freightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -138,30 +115,21 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
 
         flipOverDrivetrain = new OneWheelDirectDrivetrain(flipOver);
 
-       /* launch = new OneWheelDirectDrivetrain(launchMech);
-        launch.resetEncoders();
-        launch.encodersOn();
+        scheme = new TankMechanumControlScheme(gamepad1);
 
-        intake = new OneWheelDirectDrivetrain(intakeMech);
-        intake.resetEncoders();
-        intake.encodersOn();
-
-        */
 
         //code for forward mechanum drivetrain:
-        //drivetrain = new MechanumGearedDrivetrain(360, frontRight, rearRight, frontLeft, rearLeft);
+        drivetrain = new MechanumGearedDrivetrain(motorMap);
+        drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
+
     }
 
     @Override
     public void start() {
 
-        //TankMechanumControlSchemeReverse scheme = new TankMechanumControlSchemeReverse(gamepad1);
-        SingleGamepadControlScheme scheme = new SingleGamepadControlScheme(gamepad1);
-
-        drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
-
         this.addTask(drivetask);
 
+        //gamepad1 w /wheels
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             //@Override
             public void handleEvent(RobotEvent e) {
@@ -203,35 +171,88 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
                     case LEFT_BUMPER_UP:
                         freightIntake.setPower(0);
                         break;
-                    case BUTTON_Y_DOWN:
-                        alternateRotate();
-                        break;
 //                    case BUTTON_Y_DOWN:
-//                        flipOver.setPower(1);
+//                        alternateRotate();
 //                        break;
-//                    case BUTTON_Y_UP:
-//                        flipOver.setPower(0);
-//                        break;
-//                    case BUTTON_A_DOWN:_DOWN:
-//                        flipOver.setPower(-1);
-//                        break;
-//                    case BUTTON_A_UP:_UP:
-//                        flipOver.setPower(0);
-//                        break;
-
-//                    case BUTTON_A_DOWN:
-//                        //servo holding the freight inside intake
-//                        if (intakeDropOpen) {
-//                            intakeDrop.setPosition(CLOSE_DROP_SERVO);
-//                            intakeDropOpen = false;
-//                        } else {
-//                            intakeDrop.setPosition(OPEN_DROP_SERVO);
-//                            intakeDropOpen = true;
-//                        }
-//                        break;
+                    case BUTTON_B_DOWN:
+                        flipOver.setPower(0.4);
+                        break;
+                    case BUTTON_B_UP:
+                        flipOver.setPower(0);
+                        break;
+                    case BUTTON_X_DOWN:
+                        flipOver.setPower(-0.4);
+                        break;
+                    case BUTTON_X_UP:
+                        flipOver.setPower(0);
+                        break;
                 }
             }
 
         });
+
+        //gamepad2 w /nowheels only mechs
+        this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
+            public void handleEvent(RobotEvent e) {
+                GamepadEvent gamepadEvent = (GamepadEvent) e;
+
+                switch (gamepadEvent.kind) {
+                    //launching system
+                    case RIGHT_TRIGGER_DOWN:
+                        //moving carousel
+                        carouselMechOne.setPower(-1);
+                        carouselMechTwo.setPower(1);
+                        break;
+                    case RIGHT_TRIGGER_UP:
+                        //STOPPING CAROUSEL
+                        carouselMechOne.setPower(0);
+                        carouselMechTwo.setPower(0);
+                        break;
+                    case LEFT_TRIGGER_DOWN:
+                        //moving carousel
+                        carouselMechOne.setPower(1);
+                        carouselMechTwo.setPower(-1);
+                        break;
+                    case LEFT_TRIGGER_UP:
+                        //STOPPING CAROUSEL
+                        carouselMechTwo.setPower(0);
+                        carouselMechOne.setPower(0);
+                        break;
+                    case RIGHT_BUMPER_DOWN:
+                        //moving flaps forward
+                        freightIntake.setPower(1);
+                        break;
+                    case RIGHT_BUMPER_UP:
+                        freightIntake.setPower(0);
+                        break;
+                    case LEFT_BUMPER_DOWN:
+                        //moving flaps backward
+                        freightIntake.setPower(-1);
+                        break;
+                    case LEFT_BUMPER_UP:
+                        freightIntake.setPower(0);
+                        break;
+//                    case BUTTON_Y_DOWN:
+//                        alternateRotate();
+//                        break;
+                    case BUTTON_B_DOWN:
+                        flipOver.setPower(0.4);
+                        break;
+                    case BUTTON_B_UP:
+                        flipOver.setPower(0);
+                        break;
+                    case BUTTON_X_DOWN:
+                        flipOver.setPower(-0.4);
+                        break;
+                    case BUTTON_X_UP:
+                        flipOver.setPower(0);
+                        break;
+
+
+                }
+            }
+
+        });
+
     }
 }
