@@ -26,7 +26,7 @@ import team25core.TankMechanumControlScheme;
 //import team25core.TankMechanumControlSchemeReverse;
 import team25core.TeleopDriveTask;
 
-@TeleOp(name = "FreightFrenzyTeleop")
+@TeleOp(name = "FreightFrenzyTeleop2")
 //@Disabled
 public class FrenzyTeleop extends StandardFourMotorRobot {
 
@@ -49,10 +49,13 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     private boolean intakeDropOpen = false;
 
 
+    private Telemetry.Item locationTlm;
+    private Telemetry.Item buttonTlm;
 
     //changing direction for flip mechanism
     private DcMotor flipOver;
-    private OneWheelDirectDrivetrain flipOverDrivetrain;
+    private DcMotor flapper;
+    //private OneWheelDirectDrivetrain flipOverDrivetrain;
     public static int DEGREES_DOWN = 1600;
     public static int DEGREES_UP = 180;
     public static double FLIPOVER_POWER = 0.3;
@@ -66,27 +69,27 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     public void handleEvent(RobotEvent e) {
     }
 
-    //flipover positions for bottom and top positions for intake and placing on hubs
-    private void rotateFlipOver(Direction direction) {
-        if (direction == FrenzyTeleop.Direction.CLOCKWISE) {
-            flipOver.setDirection(DcMotorSimple.Direction.REVERSE);
-        } else {
-            flipOver.setDirection(DcMotorSimple.Direction.FORWARD);
-        }
-        this.addTask(new RunToEncoderValueTask(this, flipOver, DEGREES_DOWN, FLIPOVER_POWER));
-    }
-
-    //alternates between down and up positions.
-    private void alternateRotate() {
-        if (rotateDown) {       // happens first
-            rotateFlipOver(FrenzyTeleop.Direction.CLOCKWISE);
-            rotateDown = false;
-
-        } else {
-            rotateFlipOver(FrenzyTeleop.Direction.COUNTERCLOCKWISE);
-            rotateDown = true;
-        }
-    }
+//    //flipover positions for bottom and top positions for intake and placing on hubs
+//    private void rotateFlipOver(Direction direction) {
+//        if (direction == FrenzyTeleop.Direction.CLOCKWISE) {
+//            flipOver.setDirection(DcMotorSimple.Direction.REVERSE);
+//        } else {
+//            flipOver.setDirection(DcMotorSimple.Direction.FORWARD);
+//        }
+//        this.addTask(new RunToEncoderValueTask(this, flipOver, DEGREES_DOWN, FLIPOVER_POWER));
+//    }
+//
+//    //alternates between down and up positions.
+//    private void alternateRotate() {
+//        if (rotateDown) {       // happens first
+//            rotateFlipOver(FrenzyTeleop.Direction.CLOCKWISE);
+//            rotateDown = false;
+//
+//        } else {
+//            rotateFlipOver(FrenzyTeleop.Direction.COUNTERCLOCKWISE);
+//            rotateDown = true;
+//        }
+//    }
 
 
     @Override
@@ -100,20 +103,22 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
 
         //mapping freight intake mech
         freightIntake = hardwareMap.get(DcMotor.class, "freightIntake");
-        flipOver = hardwareMap.get(DcMotor.class, "flipOver");
+        //flipOver = hardwareMap.get(DcMotor.class, "flipOver");
+        flapper = hardwareMap.get(DcMotor.class, "flipOver");
 //      intakeDrop = hardwareMap.servo.get("intakeDrop");
 
         // reset encoders
         carouselMechOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         carouselMechTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         freightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flipOver.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flipOver.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        flipOver.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flapper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //flipOver.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //allows for flipOver moter to hold psoition when no button is being pressed
-        flipOver.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //flipOver.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        flipOverDrivetrain = new OneWheelDirectDrivetrain(flipOver);
+        //flipOverDrivetrain = new OneWheelDirectDrivetrain(flipOver);
 
         scheme = new TankMechanumControlScheme(gamepad1);
 
@@ -122,13 +127,17 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
         drivetrain = new MechanumGearedDrivetrain(motorMap);
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
 
+        locationTlm = telemetry.addData("location","init");
+        buttonTlm = telemetry.addData("button", "n/a");
     }
 
     @Override
     public void start() {
 
         this.addTask(drivetask);
+        locationTlm.setValue("in start");
 
+        /* COMMENTING OUT GAMEPAD 1
         //gamepad1 w /wheels
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             //@Override
@@ -171,9 +180,9 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
                     case LEFT_BUMPER_UP:
                         freightIntake.setPower(0);
                         break;
-//                    case BUTTON_Y_DOWN:
-//                        alternateRotate();
-//                        break;
+                    case BUTTON_Y_DOWN:
+                        alternateRotate();
+                        break;
                     case BUTTON_B_DOWN:
                         flipOver.setPower(0.4);
                         break;
@@ -190,12 +199,14 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
             }
 
         });
+        GAMEPAD 1 commented out
+         */
 
         //gamepad2 w /nowheels only mechs
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
-
+                locationTlm.setValue("in gamepad2 handler");
                 switch (gamepadEvent.kind) {
                     //launching system
                     case RIGHT_TRIGGER_DOWN:
@@ -232,20 +243,25 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
                     case LEFT_BUMPER_UP:
                         freightIntake.setPower(0);
                         break;
-//                    case BUTTON_Y_DOWN:
-//                        alternateRotate();
-//                        break;
                     case BUTTON_B_DOWN:
-                        flipOver.setPower(0.4);
+                        //flipOver.setPower(0.4);
+                        flapper.setPower(0.4);
+                        buttonTlm.setValue("button B down");
                         break;
                     case BUTTON_B_UP:
-                        flipOver.setPower(0);
+//                        flipOver.setPower(0);
+                        buttonTlm.setValue("button B up");
+                        flapper.setPower(0);
                         break;
                     case BUTTON_X_DOWN:
-                        flipOver.setPower(-0.4);
+//                        flipOver.setPower(-0.4);
+                        buttonTlm.setValue("button X down");
+                        flapper.setPower(-0.4);
                         break;
                     case BUTTON_X_UP:
-                        flipOver.setPower(0);
+//                        flipOver.setPower(0);
+                        buttonTlm.setValue("button X up");
+                        flapper.setPower(0);
                         break;
 
 
@@ -256,3 +272,7 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
 
     }
 }
+
+//                    case BUTTON_Y_DOWN:
+//                            alternateRotate();
+//                            break;
