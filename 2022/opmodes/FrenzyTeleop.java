@@ -24,9 +24,10 @@ import team25core.StandardFourMotorRobot;
 import team25core.TankMechanumControlScheme;
 //import team25core.TankMechanumControlSchemeBackwards;
 //import team25core.TankMechanumControlSchemeReverse;
+import team25core.TankMechanumControlSchemeFrenzy;
 import team25core.TeleopDriveTask;
 
-@TeleOp(name = "FreightFrenzyTeleop2")
+@TeleOp(name = "FreightFrenzyTeleop3")
 //@Disabled
 public class FrenzyTeleop extends StandardFourMotorRobot {
 
@@ -60,7 +61,7 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
     public static int DEGREES_UP = 180;
     public static double FLIPOVER_POWER = 0.3;
     private boolean rotateDown = true;
-    TankMechanumControlScheme scheme;
+    TankMechanumControlSchemeFrenzy scheme;
 
 
     private MechanumGearedDrivetrain drivetrain;
@@ -120,7 +121,7 @@ public class FrenzyTeleop extends StandardFourMotorRobot {
 
         //flipOverDrivetrain = new OneWheelDirectDrivetrain(flipOver);
 
-        scheme = new TankMechanumControlScheme(gamepad1);
+        scheme = new TankMechanumControlSchemeFrenzy(gamepad1);
 
 
         //code for forward mechanum drivetrain:
