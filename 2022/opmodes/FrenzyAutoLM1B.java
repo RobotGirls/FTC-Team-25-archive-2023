@@ -46,9 +46,9 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "FrenzyAutoLM0REDSTORAGE")
+@Autonomous(name = "FrenzyAutoLM1B")
 //@Disabled
-public class FrenzyAutoLM0REDSTORAGE extends Robot {
+public class FrenzyAutoLM1B extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -91,32 +91,25 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
         // 1
         goToCarouselPath = new DeadReckonPath();
         goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 1.0);
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7, 0.5);
+
+//        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, 1.0);
+//        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.TURN, 25.5, -1.0);
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 18, -0.5); //8
 
         // 2
         turningCarouselPath = new DeadReckonPath();
         turningCarouselPath.stop();
-        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, -1.0);
+        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, 1.0);
 
         //3
         goBackOriginalLocationPath = new DeadReckonPath();
-        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7.5, -1.0);
+        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
 
         goStrafeLeftPath = new DeadReckonPath();
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13.5, 1.0);
-//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
-//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 25, 1.0);
-//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
-//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 1.0);
-//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 27, 1.0);
-//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
-
+        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 17, 1.0);
 
         goParkInStoragePath = new DeadReckonPath();
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.TURN, 10, 1.0);
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 1.0);
-
+        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15.5, -1.0);
 
 
         //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
@@ -136,7 +129,7 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
         rearLeft = hardwareMap.get(DcMotor.class, "backLeft");
         rearRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        carouselMech = hardwareMap.get(DcMotor.class, "carouselMechL");
+        carouselMech = hardwareMap.get(DcMotor.class, "carouselMechR");
 
         carouselDriveTrain = new OneWheelDirectDrivetrain(carouselMech);
         carouselDriveTrain.resetEncoders();
@@ -250,3 +243,4 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
 
 
 }
+
