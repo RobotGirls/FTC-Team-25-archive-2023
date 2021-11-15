@@ -46,9 +46,9 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "FrenzyAutoLM0REDSTORAGE1")
+@Autonomous(name = "FrenzyAutoLM1R")
 //@Disabled
-public class FrenzyAutoLM0REDSTORAGE extends Robot {
+public class FrenzyAutoLM1R extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -90,32 +90,32 @@ public class FrenzyAutoLM0REDSTORAGE extends Robot {
     {
         // 1
         goToCarouselPath = new DeadReckonPath();
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 1.0);
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7, 0.5);
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -1.0);
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7, -0.5);
 
         // 2
         turningCarouselPath = new DeadReckonPath();
         turningCarouselPath.stop();
-        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, -1.0);
+        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, 1.0);
 
         //3
         goBackOriginalLocationPath = new DeadReckonPath();
-        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7.5, -1.0);
+        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7.5, 1.0);
 
         goStrafeLeftPath = new DeadReckonPath();
-//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13.5, 1.0);
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 21, 1.0);
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 1.0);
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 1.0);
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
+        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13.5, -1.0);
+//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
+//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 21, 1.0);
+//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
+//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 1.0);
+//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 1.0);
+//        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
 
 
         goParkInStoragePath = new DeadReckonPath();
-//        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
-//        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.TURN, 10, 1.0);
-//        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 1.0);
+        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -1.0);
+        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.TURN, 10, 1.0);
+        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -1.0);
 
 
 
