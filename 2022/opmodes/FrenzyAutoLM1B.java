@@ -94,7 +94,7 @@ public class FrenzyAutoLM1B extends Robot {
 
 //        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, 1.0);
 //        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.TURN, 25.5, -1.0);
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 18, -0.5); //8
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, -0.5); //8
 
         // 2
         turningCarouselPath = new DeadReckonPath();

@@ -34,26 +34,30 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import team25core.DeadReckonPath;
-import team25core.Robot;
 import team25core.DeadReckonTask;
+import team25core.Drivetrain;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.OneWheelDirectDrivetrain;
+import team25core.Robot;
 import team25core.RobotEvent;
-import team25core.TankDriveTask;
-import team25core.TwoWheelDirectDrivetrain;
 
-@Autonomous(name = "FrenzyAutoW1")
+@Autonomous(name = "FrenzyAutoW8")
 //@Disabled
-public class FrenzyAutoSTRAIGHT extends Robot {
+public class FrenzyAutoSTRAIGHTEASY extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor rearLeft;
     private DcMotor rearRight;
+
+    private DcMotor flipOver;
+    private DeadReckonPath liftFlipOverPath;
+    private OneWheelDirectDrivetrain liftDriveTrain;
 
     //private Servo teamElementServo;
     //private DcMotor carouselMech;
@@ -74,6 +78,23 @@ public class FrenzyAutoSTRAIGHT extends Robot {
         }
     }
 
+
+
+    private void liftArm()
+    {
+        this.addTask(new DeadReckonTask(this, liftFlipOverPath, liftDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+//                    pathTlm.setValue("done spinning carousel");
+//                    goBackOriginalLocation();
+
+                }
+            }
+        });
+    }
+
     @Override
     public void init()
     {
@@ -82,7 +103,18 @@ public class FrenzyAutoSTRAIGHT extends Robot {
         rearLeft = hardwareMap.get(DcMotor.class, "backLeft");
         rearRight = hardwareMap.get(DcMotor.class, "backRight");
 
+        flipOver = hardwareMap.get(DcMotor.class, "flipOver");
+        flipOver.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        liftDriveTrain = new OneWheelDirectDrivetrain(flipOver);
+        liftDriveTrain.resetEncoders();
+        liftDriveTrain.encodersOn();
+
         drivetrain = new FourWheelDirectDrivetrain(frontRight, rearRight, frontLeft, rearLeft);
+
+        liftFlipOverPath = new DeadReckonPath();
+        liftFlipOverPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 14, -1.0);
+
     }
 
     @Override
@@ -90,7 +122,13 @@ public class FrenzyAutoSTRAIGHT extends Robot {
     {
         DeadReckonPath path = new DeadReckonPath();
 
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 1.0);
+        liftArm();
+
+        path.addPause(3000);
+
+        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30, -1.0);
+
+
 
 
         /**
