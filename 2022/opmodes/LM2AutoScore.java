@@ -111,7 +111,7 @@ public class LM2AutoScore extends Robot {
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.TURN, 40, 1.0);
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, -1.0);
 
-        
+
 
 
     }
