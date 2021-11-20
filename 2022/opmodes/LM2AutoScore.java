@@ -46,9 +46,9 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "FrenzyAutoLM2B")
+@Autonomous(name = "LM2AutoScore")
 //@Disabled
-public class FrenzyAutoLM2B extends Robot {
+public class LM2AutoScore extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -65,14 +65,12 @@ public class FrenzyAutoLM2B extends Robot {
     private OneWheelDirectDrivetrain intakeMechDriveTrain;
     private DcMotor freightIntake;
 
-    private DeadReckonPath turningCarouselPath;
-    private DeadReckonPath goToCarouselPath;
-    private DeadReckonPath goBackOriginalLocationPath;
-    private DeadReckonPath goStrafeLeftPath;
-    private DeadReckonPath goParkInStoragePath;
+
+    private DeadReckonPath goToShippingHubPath;
     private DeadReckonPath liftMechPath;
     private DeadReckonPath outTakePath;
-
+    private DeadReckonPath lowerMechPath;
+    private DeadReckonPath goParkInWareHousePath;
 
 
     private Telemetry.Item pathTlm;
@@ -97,40 +95,23 @@ public class FrenzyAutoLM2B extends Robot {
     public void initPath()
     {
         // 1
-        goToCarouselPath = new DeadReckonPath();
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 1.0);
-
-//        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, 1.0);
-//        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.TURN, 25.5, -1.0);
-       goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, -0.5); //8
-
-        // 2
-        turningCarouselPath = new DeadReckonPath();
-        turningCarouselPath.stop();
-        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, -1.0);
-
-        //3
-        goBackOriginalLocationPath = new DeadReckonPath();
-        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
-
-        goStrafeLeftPath = new DeadReckonPath();
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 17, 1.0);
-
-        goParkInStoragePath = new DeadReckonPath();
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15.5, -1.0);
+        goToShippingHubPath = new DeadReckonPath();
+        goToShippingHubPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 1.0);
 
         liftMechPath = new DeadReckonPath();
-        liftMechPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -1.0);  // 7 - top  5- middle  3 - bottom
+        liftMechPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, -1.0);  // 6.35 - top  5- middle  3.5 - bottom
 
         outTakePath = new DeadReckonPath();
         outTakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
 
+        lowerMechPath = new DeadReckonPath();
+        lowerMechPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, 1.0);
 
-        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
+        goParkInWareHousePath = new DeadReckonPath();
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.TURN, 40, 1.0);
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, -1.0);
 
-        //path.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 38, -1.0);
-
-        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 75, -1.0);
+        
 
 
     }
@@ -173,91 +154,23 @@ public class FrenzyAutoLM2B extends Robot {
         pathTlm = telemetry.addData("path status","unknown");
     }
 
-    public void goToCarousel()
+    public void goToShippingHub()
     {
-        this.addTask(new DeadReckonTask(this, goToCarouselPath, drivetrain){
+        this.addTask(new DeadReckonTask(this, goToShippingHubPath, drivetrain){
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
                    pathTlm.setValue("arrived at carousel");
-                  // spinCarousel();
-
-                }
-            }
-        });
-
-    }
-
-    private void spinCarousel()
-    {
-        this.addTask(new DeadReckonTask(this, turningCarouselPath, carouselDriveTrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    pathTlm.setValue("done spinning carousel");
-                    goBackOriginalLocation();
-
-                }
-            }
-        });
-    }
-
-    public void goBackOriginalLocation()
-    {
-        this.addTask(new DeadReckonTask(this, goBackOriginalLocationPath, drivetrain){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    pathTlm.setValue("went back to original positions");
-                    goStrafeLeft();
-
-
-                }
-            }
-        });
-
-    }
-
-    public void goStrafeLeft()
-    {
-        this.addTask(new DeadReckonTask(this, goStrafeLeftPath, drivetrain){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    pathTlm.setValue("strafe left done");
-                    goParkInWarehouse();
-
-
-                }
-            }
-        });
-
-    }
-
-    public void goParkInWarehouse()
-    {
-        this.addTask(new DeadReckonTask(this, goParkInStoragePath, drivetrain){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    pathTlm.setValue("parked in Storage");
                     goliftMech();
 
-
                 }
             }
         });
 
     }
+
 
     private void goliftMech()
     {
@@ -285,11 +198,46 @@ public class FrenzyAutoLM2B extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     pathTlm.setValue("done lifting");
+                    golowerMech();
 
 
                 }
             }
         });
+    }
+
+    private void golowerMech()
+    {
+        this.addTask(new DeadReckonTask(this, lowerMechPath, intakeMechDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    pathTlm.setValue("done lowering");
+                    goParkInWareHouse();
+
+
+
+                }
+            }
+        });
+    }
+
+    public void goParkInWareHouse()
+    {
+        this.addTask(new DeadReckonTask(this, goParkInWareHousePath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    pathTlm.setValue("parked in Warehouse");
+
+
+                }
+            }
+        });
+
     }
 
 
@@ -298,7 +246,7 @@ public class FrenzyAutoLM2B extends Robot {
     public void start()
     {
         DeadReckonPath path = new DeadReckonPath();
-        goliftMech();
+        goToShippingHub();
 
     }
 
