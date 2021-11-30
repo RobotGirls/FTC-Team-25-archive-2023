@@ -42,12 +42,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.ObjectDetectionTask;
+import team25core.ObjectImageInfo;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
 @Autonomous(name = "LM2AutoScore")
 //@Disabled
+//red side
 public class LM2AutoScore extends Robot {
 
     private DcMotor frontLeft;
@@ -67,13 +70,33 @@ public class LM2AutoScore extends Robot {
 
 
     private DeadReckonPath goToShippingHubPath;
-    private DeadReckonPath liftMechPath;
+
     private DeadReckonPath outTakePath;
-    private DeadReckonPath lowerMechPath;
     private DeadReckonPath goParkInWareHousePath;
 
+    private DeadReckonPath leftBottomPath;
+    private DeadReckonPath liftMechPathTop;
+    private DeadReckonPath lowerMechPathTop;
 
+    private DeadReckonPath middlePath;
+    private DeadReckonPath liftMechPathMiddle;
+    private DeadReckonPath lowerMechPathMiddle;
+
+    private DeadReckonPath rightTopPath;
+    private DeadReckonPath liftMechPathBottom;
+    private DeadReckonPath lowerMechPathBottom;
+
+    ObjectDetectionTask rdTask;
+    ObjectImageInfo objectImageInfo;
+
+    private Telemetry.Item currentLocationTlm;
     private Telemetry.Item pathTlm;
+    private double objectConfidence;
+    private String objectDetectionType;
+
+    private int numTimesInHandleEvent;
+    private String handleEventTlm;
+    private Telemetry.Item objectSeenTlm;
 
     private FourWheelDirectDrivetrain drivetrain;
 
@@ -98,18 +121,62 @@ public class LM2AutoScore extends Robot {
         goToShippingHubPath = new DeadReckonPath();
         goToShippingHubPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 1.0);
 
-        liftMechPath = new DeadReckonPath();
-        liftMechPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, -1.0);  // 6.35 - top  5- middle  3.5 - bottom
+          // 6.35 - top  5- middle  3.5 - bottom
 
         outTakePath = new DeadReckonPath();
         outTakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
 
-        lowerMechPath = new DeadReckonPath();
-        lowerMechPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, 1.0);
 
         goParkInWareHousePath = new DeadReckonPath();
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.TURN, 40, 1.0);
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, -1.0);
+
+
+        //top
+
+        rightTopPath = new DeadReckonPath();
+       // rightTopPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 1.0);
+        rightTopPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, 0.5); //go right
+        rightTopPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 0.5); //go forward
+
+        liftMechPathTop = new DeadReckonPath();
+        liftMechPathTop.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6.35, -1.0);
+
+        lowerMechPathTop = new DeadReckonPath();
+        lowerMechPathTop.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6.35, 1.0);
+
+
+
+        //middle
+
+        middlePath = new DeadReckonPath();
+        // middlePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 1.0);
+        middlePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, 0.5); //go right
+        middlePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 0.5); //go forward
+
+
+        liftMechPathMiddle = new DeadReckonPath();
+        liftMechPathMiddle.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -1.0);
+
+        lowerMechPathMiddle = new DeadReckonPath();
+        lowerMechPathMiddle.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 1.0);
+
+        // bottom
+
+        leftBottomPath = new DeadReckonPath();
+        //leftBottomPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 1.0);
+        leftBottomPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, 0.5); //go right
+        leftBottomPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 0.5); //go forward
+
+        liftMechPathBottom = new DeadReckonPath();
+        liftMechPathBottom.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, -1.0);
+
+        lowerMechPathBottom = new DeadReckonPath();
+        lowerMechPathBottom.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, 1.0);
+
+
+
+
 
 
 
@@ -152,6 +219,11 @@ public class LM2AutoScore extends Robot {
         drivetrain.encodersOn();
 
         pathTlm = telemetry.addData("path status","unknown");
+
+        objectImageInfo = new ObjectImageInfo();
+        objectImageInfo.displayTelemetry(this.telemetry);
+
+
     }
 
     public void goToShippingHub()
@@ -163,7 +235,7 @@ public class LM2AutoScore extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                    pathTlm.setValue("arrived at carousel");
-                    goliftMech();
+
 
                 }
             }
@@ -171,16 +243,36 @@ public class LM2AutoScore extends Robot {
 
     }
 
+    /////////////////////////////////////////////////// Top Methods /////////////////////////////////////////////////////////////////
 
-    private void goliftMech()
+
+    public void goMoveRightTop()
     {
-        this.addTask(new DeadReckonTask(this, liftMechPath, flipOverDriveTrain) {
+        this.addTask(new DeadReckonTask(this, rightTopPath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    pathTlm.setValue("arrived at carousel");
+                    goliftMechTop();
+
+
+                }
+            }
+        });
+
+    }
+
+    private void goliftMechTop()
+    {
+        this.addTask(new DeadReckonTask(this, liftMechPathTop, flipOverDriveTrain) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     pathTlm.setValue("done lifting");
-                    goOuttakePreloaded();
+
 
 
                 }
@@ -188,27 +280,9 @@ public class LM2AutoScore extends Robot {
         });
     }
 
-
-
-    private void goOuttakePreloaded()
+    private void golowerMechTop()
     {
-        this.addTask(new DeadReckonTask(this, outTakePath, intakeMechDriveTrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    pathTlm.setValue("done lifting");
-                    golowerMech();
-
-
-                }
-            }
-        });
-    }
-
-    private void golowerMech()
-    {
-        this.addTask(new DeadReckonTask(this, lowerMechPath, intakeMechDriveTrain) {
+        this.addTask(new DeadReckonTask(this, lowerMechPathTop, intakeMechDriveTrain) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
@@ -222,6 +296,136 @@ public class LM2AutoScore extends Robot {
             }
         });
     }
+
+    /////////////////////////////////////////////////// Middle Methods /////////////////////////////////////////////////////////////////
+
+
+    public void goMoveMiddle()
+    {
+        this.addTask(new DeadReckonTask(this, middlePath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    pathTlm.setValue("arrived at carousel");
+                    goliftMechMiddle();
+
+
+                }
+            }
+        });
+
+    }
+
+    private void goliftMechMiddle()
+    {
+        this.addTask(new DeadReckonTask(this, liftMechPathMiddle, flipOverDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    pathTlm.setValue("done lifting");
+
+
+
+                }
+            }
+        });
+    }
+
+    private void golowerMechMiddle()
+    {
+        this.addTask(new DeadReckonTask(this, lowerMechPathMiddle, intakeMechDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    pathTlm.setValue("done lowering");
+
+
+
+
+                }
+            }
+        });
+    }
+
+    /////////////////////////////////////////////////// Bottom Methods /////////////////////////////////////////////////////////////////
+
+
+    public void goMoveLeftBottom()
+    {
+        this.addTask(new DeadReckonTask(this, leftBottomPath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    pathTlm.setValue("arrived at carousel");
+                    goliftMechBottom();
+
+
+                }
+            }
+        });
+
+
+
+    }
+
+    private void goliftMechBottom()
+    {
+        this.addTask(new DeadReckonTask(this, liftMechPathBottom, flipOverDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    pathTlm.setValue("done lifting");
+
+
+
+                }
+            }
+        });
+    }
+
+    private void golowerMechBottom()
+    {
+        this.addTask(new DeadReckonTask(this, lowerMechPathBottom, intakeMechDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    pathTlm.setValue("done lowering");
+                    goParkInWareHouse();
+
+
+
+                }
+            }
+        });
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private void goOuttakePreloaded()
+    {
+        this.addTask(new DeadReckonTask(this, outTakePath, intakeMechDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    pathTlm.setValue("done lifting");
+
+
+
+                }
+            }
+        });
+    }
+
+
 
     public void goParkInWareHouse()
     {
@@ -237,6 +441,51 @@ public class LM2AutoScore extends Robot {
                 }
             }
         });
+
+    }
+
+    public void setObjectDetection()
+    {
+        rdTask = new ObjectDetectionTask(this,"Webcam1")
+        {
+            @Override
+            public void handleEvent(RobotEvent e)
+            {
+                ObjectDetectionEvent event = (ObjectDetectionEvent) e;
+                objectImageInfo.getImageInfo(event);
+                objectConfidence = objectImageInfo.getConfidence();
+                objectDetectionType = objectImageInfo.getObjDetectionType();
+                currentLocationTlm.setValue("in ObjectDetectionTask handleEvent");
+
+
+                if(event.kind == EventKind.OBJECTS_DETECTED)
+                {
+                    objectSeenTlm.setValue(objectDetectionType);
+
+                    if (objectDetectionType.equals("topCap") )
+                    {
+                        objectSeenTlm.setValue("topCap");
+                        goMoveRightTop();
+
+                    }
+                    else if (objectDetectionType.equals("middleCap") )
+                    {
+                        objectSeenTlm.setValue("middleCap");
+                        goMoveMiddle();
+
+                    }
+                    else if (objectDetectionType.equals("bottomCap") )
+                    {
+                        objectSeenTlm.setValue("bottomCap");
+                        goMoveLeftBottom();
+
+                    }
+                    else
+                        objectSeenTlm.setValue("no objects Seen");
+                }
+
+            }
+        };
 
     }
 
