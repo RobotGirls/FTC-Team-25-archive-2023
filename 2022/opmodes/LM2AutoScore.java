@@ -48,7 +48,7 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "LM2AutoScore")
+@Autonomous(name = "LM2AutoScore1.5")
 //@Disabled
 //red side
 public class LM2AutoScore extends Robot {
@@ -91,8 +91,11 @@ public class LM2AutoScore extends Robot {
 
     private Telemetry.Item currentLocationTlm;
     private Telemetry.Item pathTlm;
+    private Telemetry.Item objectConfidenceTlm;
     private double objectConfidence;
     private String objectDetectionType;
+
+    private String objectTypeSeen;
 
     private int numTimesInHandleEvent;
     private String handleEventTlm;
@@ -222,6 +225,10 @@ public class LM2AutoScore extends Robot {
 
         objectImageInfo = new ObjectImageInfo();
         objectImageInfo.displayTelemetry(this.telemetry);
+
+        objectConfidenceTlm = telemetry.addData("Confidence","unknown");
+
+        setObjectDetection();
 
 
     }
@@ -374,6 +381,7 @@ public class LM2AutoScore extends Robot {
 
     }
 
+
     private void goliftMechBottom()
     {
         this.addTask(new DeadReckonTask(this, liftMechPathBottom, flipOverDriveTrain) {
@@ -458,32 +466,33 @@ public class LM2AutoScore extends Robot {
                 currentLocationTlm.setValue("in ObjectDetectionTask handleEvent");
 
 
+
                 if(event.kind == EventKind.OBJECTS_DETECTED)
                 {
                     objectSeenTlm.setValue(objectDetectionType);
+                    objectTypeSeen = objectDetectionType;
+                    objectConfidenceTlm.setValue(objectConfidence);
 
-                    if (objectDetectionType.equals("topCap") )
-                    {
-                        objectSeenTlm.setValue("topCap");
-                        goMoveRightTop();
+                    if (objectDetectionType.equals("capStoneTop")) {
+                        objectSeenTlm.setValue("capStoneTop");
 
-                    }
-                    else if (objectDetectionType.equals("middleCap") )
-                    {
-                        objectSeenTlm.setValue("middleCap");
-                        goMoveMiddle();
 
-                    }
-                    else if (objectDetectionType.equals("bottomCap") )
-                    {
-                        objectSeenTlm.setValue("bottomCap");
-                        goMoveLeftBottom();
 
-                    }
-                    else
+                    } else if (objectDetectionType.equals("capStoneMid")) {
+                        objectSeenTlm.setValue("capStoneMid");
+
+
+
+                    } else if (objectDetectionType.equals("capStoneBtm")) {
+                        objectSeenTlm.setValue("capStoneBtm");
+
+
+
+                    } else {
                         objectSeenTlm.setValue("no objects Seen");
-                }
 
+                    }
+                }
             }
         };
 
@@ -494,8 +503,26 @@ public class LM2AutoScore extends Robot {
     @Override
     public void start()
     {
-        DeadReckonPath path = new DeadReckonPath();
-        goToShippingHub();
+        //DeadReckonPath path = new DeadReckonPath();
+        //goToShippingHub();
+
+        currentLocationTlm.setValue("In START, capstone top");
+
+        if ( objectTypeSeen.equals("capStoneTop") )
+        {
+            //goMoveRightTop();
+            currentLocationTlm.setValue("In START, capstone top");
+        }
+        else if ( objectTypeSeen.equals("capStoneMid") )
+        {
+            //goMoveMiddle();
+            currentLocationTlm.setValue("In START, capstone middle");
+        }
+        else if ( objectTypeSeen.equals("capStoneBtm") )
+        {
+            //goMoveLeftBottom();
+            currentLocationTlm.setValue("In START, capstone bottom");
+        }
 
     }
 
