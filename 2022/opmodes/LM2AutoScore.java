@@ -194,7 +194,7 @@ public class LM2AutoScore extends Robot {
         rearLeft = hardwareMap.get(DcMotor.class, "backLeft");
         rearRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        carouselMech = hardwareMap.get(DcMotor.class, "carouselMechR");
+        carouselMech = hardwareMap.get(DcMotor.class, "carouselMech");
 
         carouselDriveTrain = new OneWheelDirectDrivetrain(carouselMech);
         carouselDriveTrain.resetEncoders();

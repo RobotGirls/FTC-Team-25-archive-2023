@@ -29,8 +29,8 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
 
 
     //duck carousel
-    private DcMotor carouselMechOne;
-    private DcMotor carouselMechTwo;
+    private DcMotor carouselMech;
+
 
     //freight intake
     private DcMotor freightIntake;
@@ -87,8 +87,8 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
         super.init();
 
         //mapping carousel mech
-        carouselMechOne = hardwareMap.get(DcMotor.class, "carouselMechR");
-        carouselMechTwo = hardwareMap.get(DcMotor.class, "carouselMechL");
+        carouselMech = hardwareMap.get(DcMotor.class, "carouselMech");
+
 
         //mapping freight intake mech
         freightIntake = hardwareMap.get(DcMotor.class, "freightIntake");
@@ -97,8 +97,8 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
 //      intakeDrop = hardwareMap.servo.get("intakeDrop");
 
         // reset encoders
-        carouselMechOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        carouselMechTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        carouselMech.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         freightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        flipOver.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flapper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -201,23 +201,23 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
                     //launching system
                     case RIGHT_TRIGGER_DOWN:
                         //moving carousel
-                        carouselMechOne.setPower(-1);
-                        carouselMechTwo.setPower(1);
+                        carouselMech.setPower(-1);
+                        carouselMech.setPower(1);
                         break;
                     case RIGHT_TRIGGER_UP:
                         //STOPPING CAROUSEL
-                        carouselMechOne.setPower(0);
-                        carouselMechTwo.setPower(0);
+                        carouselMech.setPower(0);
+                        carouselMech.setPower(0);
                         break;
                     case LEFT_TRIGGER_DOWN:
                         //moving carousel
-                        carouselMechOne.setPower(1);
-                        carouselMechTwo.setPower(-1);
+                        carouselMech.setPower(1);
+                        carouselMech.setPower(-1);
                         break;
                     case LEFT_TRIGGER_UP:
                         //STOPPING CAROUSEL
-                        carouselMechTwo.setPower(0);
-                        carouselMechOne.setPower(0);
+                        carouselMech.setPower(0);
+                        carouselMech.setPower(0);
                         break;
                     case RIGHT_BUMPER_DOWN:
                         //moving flaps forward
