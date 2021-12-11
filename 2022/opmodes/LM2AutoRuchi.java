@@ -402,6 +402,9 @@ public class LM2AutoRuchi extends Robot {
                 objectDetectionType = objectImageInfo.getObjDetectionType();
                 currentLocationTlm.setValue("in ObjectDetectionTask handleEvent");
 
+                rdTask.init(telemetry, hardwareMap); rdTask.setDetectionKind(FrenzyDetectionTask.DetectionKind.EVERYTHING);
+                //cindys edit
+
 
                 if(event.kind == EventKind.OBJECTS_DETECTED)
                 {
@@ -441,6 +444,8 @@ public class LM2AutoRuchi extends Robot {
     {
         //DeadReckonPath path = new DeadReckonPath();
         //goToShippingHub();
+
+        addTask(rdTask);
 
         currentLocationTlm.setValue("In START, capstone top");
 

@@ -49,11 +49,7 @@ public class FrenzyImageInfo {
         return confidence;
     }
 
-    public String getObjectType(){
-        return objectType;
-    }
-
-    public String getObjDetectionType() { return objectDetectionType; }
+    public String getObjDetectionType() { return objectType; }
 
     public void getImageInfo(FrenzyDetectionTask.ObjectDetectionEvent event) {
         //confidence is the likelihood that the object we detect is an object in percentage
