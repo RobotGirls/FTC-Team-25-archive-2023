@@ -42,15 +42,16 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
-
+import team25core.ObjectDetectionTask;
+import team25core.ObjectImageInfo;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "LM2AutoScoreRuchi")
+@Autonomous(name = "LM2AutoScore1.5")
 //@Disabled
 //red side
-public class LM2AutoRuchi extends Robot {
+public class LM2AutoScore extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -73,21 +74,20 @@ public class LM2AutoRuchi extends Robot {
     private DeadReckonPath outTakePath;
     private DeadReckonPath goParkInWareHousePath;
 
-    private DeadReckonPath moveToShippingHub;
-
+    private DeadReckonPath leftBottomPath;
     private DeadReckonPath liftMechPathTop;
     private DeadReckonPath lowerMechPathTop;
 
+    private DeadReckonPath middlePath;
     private DeadReckonPath liftMechPathMiddle;
     private DeadReckonPath lowerMechPathMiddle;
 
-
+    private DeadReckonPath rightTopPath;
     private DeadReckonPath liftMechPathBottom;
     private DeadReckonPath lowerMechPathBottom;
 
-
-    FrenzyDetectionTask rdTask;
-    FrenzyImageInfo objectImageInfo;
+    ObjectDetectionTask rdTask;
+    ObjectImageInfo objectImageInfo;
 
     private Telemetry.Item currentLocationTlm;
     private Telemetry.Item pathTlm;
@@ -124,27 +124,23 @@ public class LM2AutoRuchi extends Robot {
         goToShippingHubPath = new DeadReckonPath();
         goToShippingHubPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 1.0);
 
+          // 6.35 - top  5- middle  3.5 - bottom
+
+        outTakePath = new DeadReckonPath();
+        outTakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
+
+
         goParkInWareHousePath = new DeadReckonPath();
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.TURN, 40, 1.0);
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, -1.0);
 
 
-
-
-
-        //outtaking object
-        outTakePath = new DeadReckonPath();
-        outTakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
-
-
-        // move sideways to shipping hub after detection
-        moveToShippingHub = new DeadReckonPath();
-        moveToShippingHub.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 1.0);
-
-
-        // 6.35 - top  5- middle  3.5 - bottom
-
         //top
+
+        rightTopPath = new DeadReckonPath();
+       // rightTopPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 1.0);
+        rightTopPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, 0.5); //go right
+        rightTopPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 0.5); //go forward
 
         liftMechPathTop = new DeadReckonPath();
         liftMechPathTop.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6.35, -1.0);
@@ -153,7 +149,14 @@ public class LM2AutoRuchi extends Robot {
         lowerMechPathTop.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6.35, 1.0);
 
 
+
         //middle
+
+        middlePath = new DeadReckonPath();
+        // middlePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 1.0);
+        middlePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, 0.5); //go right
+        middlePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 0.5); //go forward
+
 
         liftMechPathMiddle = new DeadReckonPath();
         liftMechPathMiddle.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -1.0);
@@ -162,6 +165,11 @@ public class LM2AutoRuchi extends Robot {
         lowerMechPathMiddle.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 1.0);
 
         // bottom
+
+        leftBottomPath = new DeadReckonPath();
+        //leftBottomPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 1.0);
+        leftBottomPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, 0.5); //go right
+        leftBottomPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, 0.5); //go forward
 
         liftMechPathBottom = new DeadReckonPath();
         liftMechPathBottom.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, -1.0);
@@ -186,7 +194,7 @@ public class LM2AutoRuchi extends Robot {
         rearLeft = hardwareMap.get(DcMotor.class, "backLeft");
         rearRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        carouselMech = hardwareMap.get(DcMotor.class, "carouselMechR");
+        carouselMech = hardwareMap.get(DcMotor.class, "carouselMech");
 
         carouselDriveTrain = new OneWheelDirectDrivetrain(carouselMech);
         carouselDriveTrain.resetEncoders();
@@ -215,13 +223,12 @@ public class LM2AutoRuchi extends Robot {
 
         pathTlm = telemetry.addData("path status","unknown");
 
-        objectImageInfo = new FrenzyImageInfo();
+        objectImageInfo = new ObjectImageInfo();
         objectImageInfo.displayTelemetry(this.telemetry);
 
         objectConfidenceTlm = telemetry.addData("Confidence","unknown");
 
         setObjectDetection();
-        //rdTask.start();
 
 
     }
@@ -245,6 +252,24 @@ public class LM2AutoRuchi extends Robot {
 
     /////////////////////////////////////////////////// Top Methods /////////////////////////////////////////////////////////////////
 
+
+    public void goMoveRightTop()
+    {
+        this.addTask(new DeadReckonTask(this, rightTopPath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    pathTlm.setValue("arrived at carousel");
+                    goliftMechTop();
+
+
+                }
+            }
+        });
+
+    }
 
     private void goliftMechTop()
     {
@@ -282,6 +307,24 @@ public class LM2AutoRuchi extends Robot {
     /////////////////////////////////////////////////// Middle Methods /////////////////////////////////////////////////////////////////
 
 
+    public void goMoveMiddle()
+    {
+        this.addTask(new DeadReckonTask(this, middlePath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    pathTlm.setValue("arrived at carousel");
+                    goliftMechMiddle();
+
+
+                }
+            }
+        });
+
+    }
+
     private void goliftMechMiddle()
     {
         this.addTask(new DeadReckonTask(this, liftMechPathMiddle, flipOverDriveTrain) {
@@ -318,6 +361,27 @@ public class LM2AutoRuchi extends Robot {
     /////////////////////////////////////////////////// Bottom Methods /////////////////////////////////////////////////////////////////
 
 
+    public void goMoveLeftBottom()
+    {
+        this.addTask(new DeadReckonTask(this, leftBottomPath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    pathTlm.setValue("arrived at carousel");
+                    goliftMechBottom();
+
+
+                }
+            }
+        });
+
+
+
+    }
+
+
     private void goliftMechBottom()
     {
         this.addTask(new DeadReckonTask(this, liftMechPathBottom, flipOverDriveTrain) {
@@ -326,7 +390,6 @@ public class LM2AutoRuchi extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     pathTlm.setValue("done lifting");
-
 
 
 
@@ -391,7 +454,7 @@ public class LM2AutoRuchi extends Robot {
 
     public void setObjectDetection()
     {
-        rdTask = new FrenzyDetectionTask(this,"Webcam1")
+        rdTask = new ObjectDetectionTask(this,"Webcam1")
         {
             @Override
             public void handleEvent(RobotEvent e)
@@ -402,8 +465,6 @@ public class LM2AutoRuchi extends Robot {
                 objectDetectionType = objectImageInfo.getObjDetectionType();
                 currentLocationTlm.setValue("in ObjectDetectionTask handleEvent");
 
-                rdTask.init(telemetry, hardwareMap); rdTask.setDetectionKind(FrenzyDetectionTask.DetectionKind.EVERYTHING);
-                //cindys edit
 
 
                 if(event.kind == EventKind.OBJECTS_DETECTED)
@@ -428,14 +489,12 @@ public class LM2AutoRuchi extends Robot {
 
 
                     } else {
-                        //objectSeenTlm.setValue("no objects Seen");
+                        objectSeenTlm.setValue("no objects Seen");
 
                     }
                 }
             }
         };
-        rdTask.init(telemetry, hardwareMap);
-        rdTask.setDetectionKind(FrenzyDetectionTask.DetectionKind.EVERYTHING);
 
     }
 
@@ -446,8 +505,6 @@ public class LM2AutoRuchi extends Robot {
     {
         //DeadReckonPath path = new DeadReckonPath();
         //goToShippingHub();
-
-        addTask(rdTask);
 
         currentLocationTlm.setValue("In START, capstone top");
 

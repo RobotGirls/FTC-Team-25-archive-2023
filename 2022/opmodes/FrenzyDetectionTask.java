@@ -53,10 +53,10 @@ public class FrenzyDetectionTask extends RobotTask {
     private Telemetry telemetry;
     private TFObjectDetector tfod;
 
-    public static final String LABEL_TOPCAP = "capStoneTop"; // edit these
+    public static final String LABEL_TOPCAP = "capStoneTop";
     private static final String LABEL_MIDDLECAP = "capStoneMid";
     private static final String LABEL_BOTTOMCAP = "capStoneBtm";
-    private static final String TFOD_MODEL_ASSET = "Frenzy.tflite"; //ruchi FIXME
+    private static final String TFOD_MODEL_ASSET = "model.tflite";
     private int rateLimitMs;
     private DetectionKind detectionKind;
     private String cameraName;
@@ -74,7 +74,6 @@ public class FrenzyDetectionTask extends RobotTask {
         BOTTOMCAP_KIND,
         UNKNOWN_KIND,
     };
-
 
     //for phone camera constructor
     public FrenzyDetectionTask(Robot robot)
@@ -269,3 +268,4 @@ public class FrenzyDetectionTask extends RobotTask {
         return false;
     }
 }
+

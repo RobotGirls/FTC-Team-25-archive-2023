@@ -8,7 +8,7 @@ public class FrenzyImageInfo {
     private double confidence;
     private double left;
     private String objectType;
-    private String objectDetectionType;
+    //private String objectDetectionType;
     private FrenzyDetectionTask.EventKind objectKind;
     private double type;
     private double imageMidpoint;
