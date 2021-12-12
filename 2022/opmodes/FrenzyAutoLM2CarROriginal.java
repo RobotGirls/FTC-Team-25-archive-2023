@@ -40,9 +40,9 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "FrenzyAutoLM1R")
+@Autonomous(name = "FrenzyAutoCarROriginal")
 //@Disabled
-public class FrenzyAutoLM1R extends Robot {
+public class FrenzyAutoLM2CarROriginal extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -84,20 +84,20 @@ public class FrenzyAutoLM1R extends Robot {
     {
         // 1
         goToCarouselPath = new DeadReckonPath();
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -1.0);
-        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
+        //goToCarouselPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -1.0);
+        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8, 0.5);
 
         // 2
         turningCarouselPath = new DeadReckonPath();
         turningCarouselPath.stop();
-        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, -1.0);
+        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30, 1.0);
 
         //3
-        goBackOriginalLocationPath = new DeadReckonPath();
-        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7.5, 1.0);
+//        goBackOriginalLocationPath = new DeadReckonPath();
+//        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7.5, 1.0);
 
         goStrafeLeftPath = new DeadReckonPath();
-        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 20, -1.0);
+        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, 1.0);
 //        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
 //        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 21, 1.0);
 //        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 57, -1.0);
@@ -106,10 +106,10 @@ public class FrenzyAutoLM1R extends Robot {
 //        goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 1.0);
 
 
-        goParkInStoragePath = new DeadReckonPath();
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -1.0);
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.TURN, 10, 1.0);
-        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -1.0);
+//        goParkInStoragePath = new DeadReckonPath();
+//        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -1.0);
+//        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.TURN, 10, 1.0);
+//        goParkInStoragePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -1.0);
 
 
 
@@ -171,30 +171,32 @@ public class FrenzyAutoLM1R extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     pathTlm.setValue("done spinning carousel");
-                    goBackOriginalLocation();
-
-                }
-            }
-        });
-    }
-
-    public void goBackOriginalLocation()
-    {
-        this.addTask(new DeadReckonTask(this, goBackOriginalLocationPath, drivetrain){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    pathTlm.setValue("went back to original positions");
+                    //goBackOriginalLocation();
                     goStrafeLeft();
 
-
                 }
             }
         });
-
     }
+
+//    public void goBackOriginalLocation()
+//    {
+//        this.addTask(new DeadReckonTask(this, goBackOriginalLocationPath, drivetrain){
+//            @Override
+//            public void handleEvent(RobotEvent e) {
+//                DeadReckonEvent path = (DeadReckonEvent) e;
+//                if (path.kind == EventKind.PATH_DONE)
+//                {
+//                    pathTlm.setValue("went back to original positions");
+//                    //goStrafeLeft();
+//                    //goParkInWarehouse();
+//
+//
+//                }
+//            }
+//        });
+//
+//    }
 
     public void goStrafeLeft()
     {
@@ -205,7 +207,7 @@ public class FrenzyAutoLM1R extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     pathTlm.setValue("strafe left done");
-                    goParkInWarehouse();
+                    //goParkInWarehouse();
 
 
                 }
@@ -214,22 +216,22 @@ public class FrenzyAutoLM1R extends Robot {
 
     }
 
-    public void goParkInWarehouse()
-    {
-        this.addTask(new DeadReckonTask(this, goParkInStoragePath, drivetrain){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    pathTlm.setValue("parked in Storage");
-
-
-                }
-            }
-        });
-
-    }
+//    public void goParkInWarehouse()
+//    {
+//        this.addTask(new DeadReckonTask(this, goParkInStoragePath, drivetrain){
+//            @Override
+//            public void handleEvent(RobotEvent e) {
+//                DeadReckonEvent path = (DeadReckonEvent) e;
+//                if (path.kind == EventKind.PATH_DONE)
+//                {
+//                    pathTlm.setValue("parked in Storage");
+//
+//
+//                }
+//            }
+//        });
+//
+//    }
 
 
 

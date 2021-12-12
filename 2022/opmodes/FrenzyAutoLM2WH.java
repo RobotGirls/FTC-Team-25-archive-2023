@@ -46,9 +46,9 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "FrenzyAutoW8")
+@Autonomous(name = "FrenzyAutoWH")
 //@Disabled
-public class FrenzyAutoSTRAIGHTEASY extends Robot {
+public class FrenzyAutoLM2WH extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -105,6 +105,7 @@ public class FrenzyAutoSTRAIGHTEASY extends Robot {
 
         flipOver = hardwareMap.get(DcMotor.class, "flipOver");
         flipOver.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flipOver.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         liftDriveTrain = new OneWheelDirectDrivetrain(flipOver);
         liftDriveTrain.resetEncoders();
@@ -113,7 +114,7 @@ public class FrenzyAutoSTRAIGHTEASY extends Robot {
         drivetrain = new FourWheelDirectDrivetrain(frontRight, rearRight, frontLeft, rearLeft);
 
         liftFlipOverPath = new DeadReckonPath();
-        liftFlipOverPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 14, -1.0);
+        liftFlipOverPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, -1.0);
 
     }
 
@@ -126,7 +127,7 @@ public class FrenzyAutoSTRAIGHTEASY extends Robot {
 
         path.addPause(3000);
 
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30, -1.0);
+        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6, -1.0);
 
 
 

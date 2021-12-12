@@ -53,13 +53,17 @@ public class FrenzyDetectionTask extends RobotTask {
     private Telemetry telemetry;
     private TFObjectDetector tfod;
 
-    public static final String LABEL_TOPCAP = "capStoneTop";
-    private static final String LABEL_MIDDLECAP = "capStoneMid";
-    private static final String LABEL_BOTTOMCAP = "capStoneBtm";
+//    public static final String LABEL_TOPCAP = "capStoneTop";
+//    private static final String LABEL_MIDDLECAP = "capStoneMid";
+//    private static final String LABEL_BOTTOMCAP = "capStoneBtm";
+    public static final String LABEL_TOPCAP = "duck";
+    private static final String LABEL_MIDDLECAP = "element";
+    private static final String LABEL_BOTTOMCAP = "nothing";
     private static final String TFOD_MODEL_ASSET = "model.tflite";
     private int rateLimitMs;
     private DetectionKind detectionKind;
     private String cameraName;
+    private Telemetry.Item objTlm;
 
     public enum DetectionKind {
         EVERYTHING, //this may go away
@@ -83,13 +87,16 @@ public class FrenzyDetectionTask extends RobotTask {
         rateLimitMs = 0;
         detectionKind = DetectionKind.EVERYTHING;
     }
-    //for webcamera construtor
-    public FrenzyDetectionTask(Robot robot, String cameraName)
+    //for webcamera constructor
+
+    public FrenzyDetectionTask(Robot robot, String cameraName, Telemetry.Item tlm)
     {
         super(robot);
         rateLimitMs = 0;
         detectionKind = DetectionKind.EVERYTHING;
         this.cameraName = cameraName;
+        objTlm = tlm;
+        objTlm.setValue("in FrenzyDetectionTask constructor");
     }
 
     private void initVuforia(HardwareMap hardwareMap) {
@@ -231,34 +238,43 @@ public class FrenzyDetectionTask extends RobotTask {
     protected void processDetectedObjects(List<Recognition> objects)
     {
         if (objects == null || objects.isEmpty()) {
+            objTlm.setValue("in processDetectedObject object NULL");
             return;
         }
-
+        objTlm.setValue("in FrenzyDetectionTask processDetectedObject");
         switch (detectionKind) {
             case EVERYTHING:
+                objTlm.setValue("in processDetectedObject EVERYTHING");
                 processEverything(objects);
                 break;
             case BOTTOMCAP_DETECTED:
+                objTlm.setValue("in processDetectedObject bottom");
                 processObject3(objects);
                 break;
             case MIDDLECAP_DETECTED:
+                objTlm.setValue("in processDetectedObject middle");
                 processObject2(objects);
                 break;
             case TOPCAP_DETECTED:
+                objTlm.setValue("in processDetectedObject top");
                 processObject1(objects);
                 break;
+            default:
+                objTlm.setValue("in processDetectedObject else");
         }
     }
 
     @Override
     public boolean timeslice()
     {
+        objTlm.setValue("in timeslice 1");
         //timeslice set to 0 do when it gets called
         if (rateLimitMs != 0) {
             if (timer.time() < rateLimitMs) {
                 return false;
             }
         }
+        objTlm.setValue("in timeslice 2");
         //shows location of object
         processDetectedObjects(tfod.getUpdatedRecognitions());
 

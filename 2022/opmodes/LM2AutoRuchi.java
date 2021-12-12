@@ -47,7 +47,7 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "LM2AutoScoreRuchi")
+@Autonomous(name = "LM2AutoScore2.4")
 //@Disabled
 //red side
 public class LM2AutoRuchi extends Robot {
@@ -186,7 +186,7 @@ public class LM2AutoRuchi extends Robot {
         rearLeft = hardwareMap.get(DcMotor.class, "backLeft");
         rearRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        carouselMech = hardwareMap.get(DcMotor.class, "carouselMechR");
+        carouselMech = hardwareMap.get(DcMotor.class, "carouselMech");
 
         carouselDriveTrain = new OneWheelDirectDrivetrain(carouselMech);
         carouselDriveTrain.resetEncoders();
@@ -214,6 +214,7 @@ public class LM2AutoRuchi extends Robot {
         drivetrain.encodersOn();
 
         pathTlm = telemetry.addData("path status","unknown");
+        currentLocationTlm = telemetry.addData("current location", "init");
 
         objectImageInfo = new FrenzyImageInfo();
         objectImageInfo.displayTelemetry(this.telemetry);
@@ -391,7 +392,7 @@ public class LM2AutoRuchi extends Robot {
 
     public void setObjectDetection()
     {
-        rdTask = new FrenzyDetectionTask(this,"Webcam1")
+        rdTask = new FrenzyDetectionTask(this,"Webcam1",currentLocationTlm)
         {
             @Override
             public void handleEvent(RobotEvent e)
@@ -436,6 +437,7 @@ public class LM2AutoRuchi extends Robot {
         };
         rdTask.init(telemetry, hardwareMap);
         rdTask.setDetectionKind(FrenzyDetectionTask.DetectionKind.EVERYTHING);
+        //currentLocationTlm.setValue("setObjectDetection");
 
     }
 
@@ -449,26 +451,24 @@ public class LM2AutoRuchi extends Robot {
 
         addTask(rdTask);
 
-        currentLocationTlm.setValue("In START, capstone top");
-
-        if ( objectTypeSeen.equals("capStoneTop") )
-        {
-            //goMoveRightTop();
-            currentLocationTlm.setValue("In START, capstone top");
-        }
-        else if ( objectTypeSeen.equals("capStoneMid") )
-        {
-            //goMoveMiddle();
-            currentLocationTlm.setValue("In START, capstone middle");
-        }
-        else if ( objectTypeSeen.equals("capStoneBtm") )
-        {
-            //goMoveLeftBottom();
-            currentLocationTlm.setValue("In START, capstone bottom");
-        }
+        //currentLocationTlm.setValue("In START, capstone top");
+//
+//        if ( objectTypeSeen.equals("capStoneTop") )
+//        {
+//            //goMoveRightTop();
+//            currentLocationTlm.setValue("In START, capstone top");
+//        }
+//        else if ( objectTypeSeen.equals("capStoneMid") )
+//        {
+//            //goMoveMiddle();
+//            currentLocationTlm.setValue("In START, capstone middle");
+//        }
+//        else if ( objectTypeSeen.equals("capStoneBtm") )
+//        {
+//            //goMoveLeftBottom();
+//            currentLocationTlm.setValue("In START, capstone bottom");
+//        }
 
     }
-
-
 
 }

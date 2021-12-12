@@ -48,7 +48,7 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "LM2AutoScore1.5")
+@Autonomous(name = "LM2AutoScoreDU")
 //@Disabled
 //red side
 public class LM2AutoScore extends Robot {

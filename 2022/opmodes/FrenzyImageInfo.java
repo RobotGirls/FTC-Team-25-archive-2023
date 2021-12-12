@@ -95,7 +95,7 @@ public class FrenzyImageInfo {
         marginTlm = telemetry.addData("margin" , "unknown");
         pixelsPerInchTlm = telemetry.addData("pixelsPerInch", "unknown");
         distanceBtWWebcamAndGrabberTlm = telemetry.addData("distance BtW Webcam and Grabber","unknown");
-        currLocationTlm = telemetry.addData("curr location", "in ObjectImageInfo constructor");
+        currLocationTlm = telemetry.addData("curr location", "in ObjectImageInfo displayTelemetry");
     }
     //CONTINUE HERE ********
     //ADD METHOD TO RETURN THE OBJECT TYPE

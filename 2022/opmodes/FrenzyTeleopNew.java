@@ -15,7 +15,7 @@ import team25core.TankMechanumControlSchemeFrenzy;
 import team25core.TankMechanumControlSchemeReverse;
 import team25core.TeleopDriveTask;
 
-@TeleOp(name = "FreightFrenzyTeleopNew6")
+@TeleOp(name = "FreightFrenzyTeleopNew8")
 //@Disabled
 public class FrenzyTeleopNew extends StandardFourMotorRobot {
 
@@ -89,16 +89,17 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
 
         //mapping freight intake mech
         freightIntake = hardwareMap.get(DcMotor.class, "freightIntake");
-        //flipOver = hardwareMap.get(DcMotor.class, "flipOver");
-        flapper = hardwareMap.get(DcMotor.class, "flipOver");
+        flipOver = hardwareMap.get(DcMotor.class, "flipOver");
+        //flapper = hardwareMap.get(DcMotor.class, "flipOver");
 //      intakeDrop = hardwareMap.servo.get("intakeDrop");
 
         // reset encoders
 
         carouselMech.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         freightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        flipOver.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flapper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flipOver.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flipOver.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //flapper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //flipOver.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //allows for flipOver moter to hold psoition when no button is being pressed
@@ -113,6 +114,7 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
         //code for forward mechanum drivetrain:
         drivetrain = new MechanumGearedDrivetrain(motorMap);
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
+        drivetask.slowDown(true);
 
         locationTlm = telemetry.addData("location","init");
         buttonTlm = telemetry.addData("button", "n/a");
@@ -124,71 +126,6 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
         this.addTask(drivetask);
         locationTlm.setValue("in start");
 
-        /* COMMENTING OUT GAMEPAD 1
-        //gamepad1 w /wheels
-        this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
-            //@Override
-            public void handleEvent(RobotEvent e) {
-                GamepadEvent gamepadEvent = (GamepadEvent) e;
-
-                switch (gamepadEvent.kind) {
-                    //launching system
-                    case RIGHT_TRIGGER_DOWN:
-                        //moving carousel
-                        carouselMechOne.setPower(-1);
-                        carouselMechTwo.setPower(1);
-                        break;
-                    case RIGHT_TRIGGER_UP:
-                        //STOPPING CAROUSEL
-                        carouselMechOne.setPower(0);
-                        carouselMechTwo.setPower(0);
-                        break;
-                    case LEFT_TRIGGER_DOWN:
-                        //moving carousel
-                        carouselMechOne.setPower(1);
-                        carouselMechTwo.setPower(-1);
-                        break;
-                    case LEFT_TRIGGER_UP:
-                        //STOPPING CAROUSEL
-                        carouselMechTwo.setPower(0);
-                        carouselMechOne.setPower(0);
-                        break;
-                    case RIGHT_BUMPER_DOWN:
-                        //moving flaps forward
-                        freightIntake.setPower(1);
-                        break;
-                    case RIGHT_BUMPER_UP:
-                        freightIntake.setPower(0);
-                        break;
-                    case LEFT_BUMPER_DOWN:
-                        //moving flaps backward
-                        freightIntake.setPower(-1);
-                        break;
-                    case LEFT_BUMPER_UP:
-                        freightIntake.setPower(0);
-                        break;
-                    case BUTTON_Y_DOWN:
-                        alternateRotate();
-                        break;
-                    case BUTTON_B_DOWN:
-                        flipOver.setPower(0.4);
-                        break;
-                    case BUTTON_B_UP:
-                        flipOver.setPower(0);
-                        break;
-                    case BUTTON_X_DOWN:
-                        flipOver.setPower(-0.4);
-                        break;
-                    case BUTTON_X_UP:
-                        flipOver.setPower(0);
-                        break;
-                }
-            }
-
-        });
-        GAMEPAD 1 commented out
-         */
-
         //gamepad2 w /nowheels only mechs
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
             public void handleEvent(RobotEvent e) {
@@ -199,21 +136,17 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
                     case RIGHT_TRIGGER_DOWN:
                         //moving carousel
                         carouselMech.setPower(-1);
-                        carouselMech.setPower(1);
                         break;
                     case RIGHT_TRIGGER_UP:
                         //STOPPING CAROUSEL
-                        carouselMech.setPower(0);
                         carouselMech.setPower(0);
                         break;
                     case LEFT_TRIGGER_DOWN:
                         //moving carousel
                         carouselMech.setPower(1);
-                        carouselMech.setPower(-1);
                         break;
                     case LEFT_TRIGGER_UP:
                         //STOPPING CAROUSEL
-                        carouselMech.setPower(0);
                         carouselMech.setPower(0);
                         break;
                     case RIGHT_BUMPER_DOWN:
@@ -230,27 +163,22 @@ public class FrenzyTeleopNew extends StandardFourMotorRobot {
                     case LEFT_BUMPER_UP:
                         freightIntake.setPower(0);
                         break;
-                    case BUTTON_B_DOWN:
-                        //flipOver.setPower(0.4);
-                        flapper.setPower(0.4);
+                    case BUTTON_A_DOWN:
+                        flipOver.setPower(0.4);
                         buttonTlm.setValue("button B down");
                         break;
-                    case BUTTON_B_UP:
-//                        flipOver.setPower(0);
+                    case BUTTON_A_UP:
                         buttonTlm.setValue("button B up");
-                        flapper.setPower(0);
+                        flipOver.setPower(0);
                         break;
-                    case BUTTON_X_DOWN:
-//                        flipOver.setPower(-0.4);
+                    case BUTTON_Y_DOWN:
                         buttonTlm.setValue("button X down");
-                        flapper.setPower(-0.4);
+                        flipOver.setPower(-0.4);
                         break;
-                    case BUTTON_X_UP:
-//                        flipOver.setPower(0);
+                    case BUTTON_Y_UP:
                         buttonTlm.setValue("button X up");
-                        flapper.setPower(0);
+                        flipOver.setPower(0);
                         break;
-
 
                 }
             }
