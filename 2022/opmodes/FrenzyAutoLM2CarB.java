@@ -117,18 +117,21 @@ public class FrenzyAutoLM2CarB extends Robot {
 
 //        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, 1.0);
 //        goToCarouselPath.addSegment(DeadReckonPath.SegmentType.TURN, 25.5, -1.0);
-          goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8, 0.5); //8
+          goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7.7, 0.5); //8
+          goToCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.2);
+          //goToCarouselPath.addSegment(DeadReckonPath.SegmentType.TURN, 5 , -0.5);
 
         // 2
         turningCarouselPath = new DeadReckonPath();
         turningCarouselPath.stop();
-        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 35, -1.0);
+        turningCarouselPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 55, -1.0);
 
         //3
 //        goBackOriginalLocationPath = new DeadReckonPath();
 //        goBackOriginalLocationPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -1.0);
 
         goStrafeLeftPath = new DeadReckonPath();
+        //goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.TURN, 5, 0.5);
         goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, -1.0);
         goStrafeLeftPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, 0.5);
 
