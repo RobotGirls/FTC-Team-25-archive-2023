@@ -46,9 +46,9 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "LM2WareHouseAutoR1.24")
+@Autonomous(name = "LM2WareHouseAutoB")
 //@Disabled
-public class LM2WareHouseAuto extends Robot {
+public class LM2WareHouseB extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -67,7 +67,8 @@ public class LM2WareHouseAuto extends Robot {
 
 
     private DeadReckonPath strafeToShippingHubPath;
-    private DeadReckonPath liftMechPath;
+    private DeadReckonPath liftMechShortPath;
+    private DeadReckonPath liftMechLongPath;
     private DeadReckonPath goToAllianceHubPath;
     private DeadReckonPath outTakePath;
     private DeadReckonPath lowerMechPath;
@@ -97,13 +98,17 @@ public class LM2WareHouseAuto extends Robot {
     {
         // 1
         strafeToShippingHubPath = new DeadReckonPath();
-        strafeToShippingHubPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, 0.5);
+        strafeToShippingHubPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5.5, -0.5);
+        strafeToShippingHubPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6.0, -0.3);
 
-        liftMechPath = new DeadReckonPath();
-        liftMechPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11  , -1.0);  // 6.35 - top  5- middle  3.5 - bottom
+        liftMechLongPath = new DeadReckonPath();
+        liftMechLongPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5  , -0.5);
+
+        liftMechShortPath = new DeadReckonPath();
+        liftMechShortPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4  , -0.5);  // 6.35 - top  5- middle  3.5 - bottom
 
         goToAllianceHubPath = new DeadReckonPath();
-        goToAllianceHubPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.4 ,-1.0);
+        goToAllianceHubPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5 ,-0.5);
 
         outTakePath = new DeadReckonPath();
         outTakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6, 1.0);
@@ -112,9 +117,9 @@ public class LM2WareHouseAuto extends Robot {
         //lowerMechPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, 1.0);
 
         goParkInWareHousePath = new DeadReckonPath();
-        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.7, 0.5);
+        //goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.TURN, 18.5, -0.5);
-        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 26 , -0.5);
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 27 , -0.5);
 
     }
 
@@ -153,6 +158,11 @@ public class LM2WareHouseAuto extends Robot {
         drivetrain.resetEncoders();
         drivetrain.encodersOn();
 
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         pathTlm = telemetry.addData("path status","unknown");
     }
 
@@ -165,7 +175,7 @@ public class LM2WareHouseAuto extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     pathTlm.setValue("arrived at carousel");
-                    goToAllianceHub();
+                    goliftLongMech();
 
                 }
             }
@@ -173,9 +183,25 @@ public class LM2WareHouseAuto extends Robot {
 
     }
 
-    private void goliftMech()
+    private void goliftLongMech()
     {
-        this.addTask(new DeadReckonTask(this, liftMechPath, flipOverDriveTrain) {
+        this.addTask(new DeadReckonTask(this, liftMechLongPath, flipOverDriveTrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    pathTlm.setValue("done lifting");
+                    goToAllianceHub();
+
+
+                }
+            }
+        });
+    }
+
+    private void goliftShortMech()
+    {
+        this.addTask(new DeadReckonTask(this, liftMechShortPath, flipOverDriveTrain) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
@@ -257,7 +283,7 @@ public class LM2WareHouseAuto extends Robot {
     public void start()
     {
         DeadReckonPath path = new DeadReckonPath();
-        goliftMech();
+        goliftShortMech();
 
     }
 }
