@@ -33,7 +33,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.
+        eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -41,14 +42,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
-import team25core.FourWheelDirectDrivetrain;
+import team25core.
+        FourWheelDirectDrivetrain;
 import team25core.ObjectDetectionTask;
 import team25core.ObjectImageInfo;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "lm3NewAutoBW")
+@Autonomous(name = "lm3NewAutoWHB")
 //@Disabled
 //red side
 public class lm3AutoWB extends Robot {
@@ -126,15 +128,18 @@ public class lm3AutoWB extends Robot {
     public void initPath() {
         // 1
         goToShippingHubPath = new DeadReckonPath();
-        goToShippingHubPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 14, -0.25);
+        goToShippingHubPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.25);
         goToShippingHubPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, -0.25); //red
 
 
         goParkInWareHousePath = new DeadReckonPath();
         goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6, 0.25);
-        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.7, -0.25);
-        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 20, 0.3);
-        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.7);
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, -0.25);
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.TURN, 17,-0.5);
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5.5, -0.25);
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 27, 0.5);
+        goParkInWareHousePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5.5, 0.25);
+
 
 
         //outtaking object
@@ -156,7 +161,7 @@ public class lm3AutoWB extends Robot {
         //top
 
         liftMechPathTop = new DeadReckonPath();
-        liftMechPathTop.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 6, -0.25);
+        liftMechPathTop.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7.5, -0.25);
 
         lowerMechPathTop = new DeadReckonPath();
         lowerMechPathTop.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 0.25);

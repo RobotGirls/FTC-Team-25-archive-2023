@@ -40,7 +40,7 @@ import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "FrenzyAutoLM3B")
+@Autonomous(name = "lm3AutoCARCB")
 //@Disabled
 // Auto that turns carousel then drops preloaded then parks on BLUE SIDE
 public class FrenzyAutoLM2CarB2 extends Robot {
@@ -320,22 +320,7 @@ public class FrenzyAutoLM2CarB2 extends Robot {
 
 
 
-//    public void goParkInWarehouse()
-//    {
-//        this.addTask(new DeadReckonTask(this, goParkInStoragePath, drivetrain){
-//            @Override
-//            public void handleEvent(RobotEvent e) {
-//                DeadReckonEvent path = (DeadReckonEvent) e;
-//                if (path.kind == EventKind.PATH_DONE)
-//                {
-//                    pathTlm.setValue("parked in Storage");
-//
-//
-//                }
-//            }
-//        });
-//
-//    }
+
 
 
 
